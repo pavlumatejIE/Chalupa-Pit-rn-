@@ -4,6 +4,10 @@
 obrazovce), takže po nasazení hned poznáš, jestli se nová verze opravdu
 dostala na Netlify.
 
+## 1.05
+- Oprava: tlačítko „Přidat kategorii" teď zobrazí chybovou hlášku, pokud
+  se přidání nepovede (dřív selhalo tiše a vypadalo to, že nefunguje)
+
 ## 1.04
 - Oprava chyby, kdy se datum rezervace při kliknutí na den posunulo o den
   zpátky (byl to problém s časovou zónou)

@@ -12,6 +12,7 @@ export default function DocumentsPage() {
   const [showForm, setShowForm] = useState(false);
   const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [newCategory, setNewCategory] = useState("");
+  const [categoryError, setCategoryError] = useState("");
   const [title, setTitle] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [visibility, setVisibility] = useState("all");
@@ -35,10 +36,17 @@ export default function DocumentsPage() {
 
   async function addCategory() {
     if (!newCategory.trim()) return;
+    setCategoryError("");
     const { error } = await supabase.from("document_categories").insert({ name: newCategory.trim() });
-    if (!error) {
-      await logActivity(profile.id, `přidal/a kategorii dokumentů – ${newCategory.trim()}`);
+    if (error) {
+      if (error.code === "23505") {
+        setCategoryError("Tahle kategorie už existuje.");
+      } else {
+        setCategoryError("Nepodařilo se přidat kategorii: " + error.message);
+      }
+      return;
     }
+    await logActivity(profile.id, `přidal/a kategorii dokumentů – ${newCategory.trim()}`);
     setNewCategory("");
     setShowCategoryForm(false);
     load();
@@ -87,7 +95,7 @@ export default function DocumentsPage() {
         <button className="btn-primary" style={{ display: "flex", alignItems: "center", gap: 6 }} onClick={() => setShowForm(true)}>
           <Plus size={17} /> Nahrát dokument
         </button>
-        <button className="btn-ghost" style={{ display: "flex", alignItems: "center", gap: 6 }} onClick={() => setShowCategoryForm(true)}>
+        <button className="btn-ghost" style={{ display: "flex", alignItems: "center", gap: 6 }} onClick={() => { setCategoryError(""); setShowCategoryForm(true); }}>
           <Tag size={17} /> Přidat kategorii
         </button>
       </div>
@@ -200,6 +208,7 @@ export default function DocumentsPage() {
                 style={{ marginTop: 4 }}
               />
             </label>
+            {categoryError && <div style={{ fontSize: 13, color: "var(--roof)", marginTop: 8 }}>{categoryError}</div>}
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 20 }}>
               <button className="btn-ghost" onClick={() => setShowCategoryForm(false)}>
                 Zrušit
