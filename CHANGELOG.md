@@ -4,6 +4,10 @@
 obrazovce), takže po nasazení hned poznáš, jestli se nová verze opravdu
 dostala na Netlify.
 
+## 1.06
+- Existující kategorie dokumentů se teď zobrazí jako zelené štítky nad
+  seznamem dokumentů; administrátor je odtud může mazat
+
 ## 1.05
 - Oprava: tlačítko „Přidat kategorii" teď zobrazí chybovou hlášku, pokud
   se přidání nepovede (dřív selhalo tiše a vypadalo to, že nefunguje)

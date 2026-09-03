@@ -52,6 +52,11 @@ export default function DocumentsPage() {
     load();
   }
 
+  async function removeCategory(id) {
+    await supabase.from("document_categories").delete().eq("id", id);
+    load();
+  }
+
   async function upload() {
     if (!title.trim() || !file) return;
     setUploading(true);
@@ -84,6 +89,11 @@ export default function DocumentsPage() {
     load();
   }
 
+  async function removeCategory(id) {
+    await supabase.from("document_categories").delete().eq("id", id);
+    load();
+  }
+
   return (
     <div>
       <div style={{ marginBottom: 24 }}>
@@ -99,6 +109,39 @@ export default function DocumentsPage() {
           <Tag size={17} /> Přidat kategorii
         </button>
       </div>
+
+      {categories.length > 0 && (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 24 }}>
+          {categories.map((c) => (
+            <span
+              key={c.id}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                fontSize: 13,
+                padding: "5px 6px 5px 12px",
+                borderRadius: 20,
+                background: "#EAF3DE",
+                color: "#3B6D11",
+                border: "1px solid #d7e6c4",
+              }}
+            >
+              {c.name}
+              {profile.role === "admin" && (
+                <button
+                  className="icon-btn"
+                  style={{ padding: 2, color: "#3B6D11" }}
+                  onClick={() => removeCategory(c.id)}
+                  title="Smazat kategorii"
+                >
+                  <X size={13} />
+                </button>
+              )}
+            </span>
+          ))}
+        </div>
+      )}
 
       <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
         {documents.map((d) => (
@@ -198,6 +241,26 @@ export default function DocumentsPage() {
                 <X size={18} />
               </button>
             </div>
+
+            {categories.length > 0 && (
+              <div style={{ marginBottom: 18 }}>
+                <div style={{ fontSize: 11, color: "#8a8a82", marginBottom: 8, textTransform: "uppercase" }}>Už založené</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  {categories.map((c) => (
+                    <div key={c.id} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14 }}>
+                      <span style={{ flex: 1 }}>{c.name}</span>
+                      {profile.role === "admin" && (
+                        <button className="icon-btn danger" onClick={() => removeCategory(c.id)} title="Smazat kategorii">
+                          <Trash2 size={14} />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <div style={{ height: 1, background: "var(--border)", margin: "14px 0" }} />
+              </div>
+            )}
+
             <label style={{ fontSize: 12, color: "#6b6a63" }}>
               Název kategorie
               <input

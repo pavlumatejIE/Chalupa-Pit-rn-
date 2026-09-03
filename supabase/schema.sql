@@ -181,6 +181,10 @@ create policy "categories_select" on public.document_categories
   for select using (public.is_approved());
 create policy "categories_insert" on public.document_categories
   for insert with check (public.is_approved());
+create policy "categories_delete" on public.document_categories
+  for delete using (public.is_admin());
+create policy "categories_delete" on public.document_categories
+  for delete using (public.is_admin());
 
 create policy "activity_select" on public.activity_log
   for select using (public.is_approved());
