@@ -4,6 +4,12 @@
 obrazovce), takže po nasazení hned poznáš, jestli se nová verze opravdu
 dostala na Netlify.
 
+## 1.07
+- Oprava: sekce Dokumenty měla omylem zdvojený kód (dva seznamy kategorií,
+  dvě funkce na mazání) – vyčištěno na jedno přehledné místo
+- Mazání kategorie teď zobrazí chybovou hlášku, pokud se nepovede
+  (nejspíš proto, že ještě nebyla spuštěná migration_5_category_delete.sql)
+
 ## 1.06
 - Existující kategorie dokumentů se teď zobrazí jako zelené štítky nad
   seznamem dokumentů; administrátor je odtud může mazat

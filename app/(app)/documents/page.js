@@ -13,6 +13,7 @@ export default function DocumentsPage() {
   const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [newCategory, setNewCategory] = useState("");
   const [categoryError, setCategoryError] = useState("");
+  const [categoryListError, setCategoryListError] = useState("");
   const [title, setTitle] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [visibility, setVisibility] = useState("all");
@@ -53,7 +54,12 @@ export default function DocumentsPage() {
   }
 
   async function removeCategory(id) {
-    await supabase.from("document_categories").delete().eq("id", id);
+    setCategoryListError("");
+    const { error } = await supabase.from("document_categories").delete().eq("id", id);
+    if (error) {
+      setCategoryListError("Nepodařilo se smazat kategorii: " + error.message);
+      return;
+    }
     load();
   }
 
@@ -89,11 +95,6 @@ export default function DocumentsPage() {
     load();
   }
 
-  async function removeCategory(id) {
-    await supabase.from("document_categories").delete().eq("id", id);
-    load();
-  }
-
   return (
     <div>
       <div style={{ marginBottom: 24 }}>
@@ -111,35 +112,38 @@ export default function DocumentsPage() {
       </div>
 
       {categories.length > 0 && (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 24 }}>
-          {categories.map((c) => (
-            <span
-              key={c.id}
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 6,
-                fontSize: 13,
-                padding: "5px 6px 5px 12px",
-                borderRadius: 20,
-                background: "#EAF3DE",
-                color: "#3B6D11",
-                border: "1px solid #d7e6c4",
-              }}
-            >
-              {c.name}
-              {profile.role === "admin" && (
-                <button
-                  className="icon-btn"
-                  style={{ padding: 2, color: "#3B6D11" }}
-                  onClick={() => removeCategory(c.id)}
-                  title="Smazat kategorii"
-                >
-                  <X size={13} />
-                </button>
-              )}
-            </span>
-          ))}
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {categories.map((c) => (
+              <span
+                key={c.id}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 6,
+                  fontSize: 13,
+                  padding: "5px 6px 5px 12px",
+                  borderRadius: 20,
+                  background: "#EAF3DE",
+                  color: "#3B6D11",
+                  border: "1px solid #d7e6c4",
+                }}
+              >
+                {c.name}
+                {profile.role === "admin" && (
+                  <button
+                    className="icon-btn"
+                    style={{ padding: 2, color: "#3B6D11" }}
+                    onClick={() => removeCategory(c.id)}
+                    title="Smazat kategorii"
+                  >
+                    <X size={13} />
+                  </button>
+                )}
+              </span>
+            ))}
+          </div>
+          {categoryListError && <div style={{ fontSize: 13, color: "var(--roof)", marginTop: 8 }}>{categoryListError}</div>}
         </div>
       )}
 
@@ -241,25 +245,6 @@ export default function DocumentsPage() {
                 <X size={18} />
               </button>
             </div>
-
-            {categories.length > 0 && (
-              <div style={{ marginBottom: 18 }}>
-                <div style={{ fontSize: 11, color: "#8a8a82", marginBottom: 8, textTransform: "uppercase" }}>Už založené</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                  {categories.map((c) => (
-                    <div key={c.id} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14 }}>
-                      <span style={{ flex: 1 }}>{c.name}</span>
-                      {profile.role === "admin" && (
-                        <button className="icon-btn danger" onClick={() => removeCategory(c.id)} title="Smazat kategorii">
-                          <Trash2 size={14} />
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                </div>
-                <div style={{ height: 1, background: "var(--border)", margin: "14px 0" }} />
-              </div>
-            )}
 
             <label style={{ fontSize: 12, color: "#6b6a63" }}>
               Název kategorie
