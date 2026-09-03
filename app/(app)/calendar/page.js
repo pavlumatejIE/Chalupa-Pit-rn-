@@ -151,12 +151,36 @@ export default function CalendarPage() {
                   const u = profiles[r.user_id];
                   if (!u) return null;
                   return (
-                    <span key={r.id} style={{ fontSize: 11.5, padding: "2px 7px", borderRadius: 10, background: u.color, color: "#fff" }}>
+                    <span
+                      key={r.id}
+                      title={r.note || ""}
+                      style={{ fontSize: 11.5, padding: "2px 7px", borderRadius: 10, background: u.color, color: "#fff" }}
+                    >
                       {u.full_name.split(" ")[0]}
                     </span>
                   );
                 })}
               </div>
+              {dayRes.some((r) => r.note) && (
+                <div
+                  style={{
+                    fontSize: 11,
+                    color: "#6b6a63",
+                    fontStyle: "italic",
+                    lineHeight: 1.3,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    display: "-webkit-box",
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: "vertical",
+                  }}
+                >
+                  {dayRes
+                    .filter((r) => r.note)
+                    .map((r) => r.note)
+                    .join(" · ")}
+                </div>
+              )}
             </button>
           );
         })}
