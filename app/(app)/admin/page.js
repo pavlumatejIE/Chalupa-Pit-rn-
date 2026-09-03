@@ -1,12 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { useProfile } from "@/lib/useProfile";
+import { useCurrentProfile } from "@/lib/ProfileContext";
 import { adminSetPassword, adminDeleteUser } from "@/lib/adminActions";
 import { Check, X, KeyRound, Trash2 } from "lucide-react";
 
 export default function AdminPage() {
-  const { profile } = useProfile();
+  const profile = useCurrentProfile();
   const [pending, setPending] = useState([]);
   const [users, setUsers] = useState([]);
   const [notice, setNotice] = useState("");

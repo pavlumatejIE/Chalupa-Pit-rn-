@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { useProfile } from "@/lib/useProfile";
+import { useCurrentProfile } from "@/lib/ProfileContext";
 import { logActivity } from "@/lib/activity";
 import { Plus, X, Check, Hammer, ShoppingCart, Trash2, Trophy } from "lucide-react";
 
@@ -36,7 +36,7 @@ function Avatar({ profile, size = 20 }) {
 }
 
 export default function TasksPage() {
-  const { profile } = useProfile();
+  const profile = useCurrentProfile();
   const [tasks, setTasks] = useState([]);
   const [profiles, setProfiles] = useState({});
   const [showForm, setShowForm] = useState(false);

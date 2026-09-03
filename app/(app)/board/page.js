@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { useProfile } from "@/lib/useProfile";
+import { useCurrentProfile } from "@/lib/ProfileContext";
 import { logActivity } from "@/lib/activity";
 import { uploadContentType } from "@/lib/uploadHelpers";
 import { Paperclip, X, Trash2 } from "lucide-react";
@@ -14,7 +14,7 @@ function isImage(name) {
 }
 
 export default function BoardPage() {
-  const { profile } = useProfile();
+  const profile = useCurrentProfile();
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
   const [file, setFile] = useState(null);

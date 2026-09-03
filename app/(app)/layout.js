@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useProfile } from "@/lib/useProfile";
+import { ProfileProvider } from "@/lib/ProfileContext";
 import AppShell from "@/components/AppShell";
 
 export default function ProtectedLayout({ children }) {
@@ -22,5 +23,9 @@ export default function ProtectedLayout({ children }) {
     );
   }
 
-  return <AppShell profile={profile}>{children}</AppShell>;
+  return (
+    <ProfileProvider profile={profile}>
+      <AppShell profile={profile}>{children}</AppShell>
+    </ProfileProvider>
+  );
 }

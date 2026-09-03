@@ -1,13 +1,13 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { useProfile } from "@/lib/useProfile";
+import { useCurrentProfile } from "@/lib/ProfileContext";
 import { logActivity } from "@/lib/activity";
 import { uploadContentType } from "@/lib/uploadHelpers";
 import { FileText, Plus, X, Tag, Trash2 } from "lucide-react";
 
 export default function DocumentsPage() {
-  const { profile } = useProfile();
+  const profile = useCurrentProfile();
   const [documents, setDocuments] = useState([]);
   const [categories, setCategories] = useState([]);
   const [showForm, setShowForm] = useState(false);

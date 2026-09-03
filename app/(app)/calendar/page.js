@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { useProfile } from "@/lib/useProfile";
+import { useCurrentProfile } from "@/lib/ProfileContext";
 import { czechHolidays, fmtDate } from "@/lib/holidays";
 import { logActivity } from "@/lib/activity";
 import PhotoStrip from "@/components/PhotoStrip";
@@ -17,7 +17,7 @@ function fmtActivityDate(dateStr) {
 const today = new Date();
 
 export default function CalendarPage() {
-  const { profile } = useProfile();
+  const profile = useCurrentProfile();
   const [cursor, setCursor] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
   const [reservations, setReservations] = useState([]);
   const [profiles, setProfiles] = useState({});

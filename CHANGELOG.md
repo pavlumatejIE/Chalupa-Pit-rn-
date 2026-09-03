@@ -4,6 +4,14 @@
 obrazovce), takže po nasazení hned poznáš, jestli se nová verze opravdu
 dostala na Netlify.
 
+## 1.14
+- Oprava vážné chyby: appka mohla občas spadnout s hláškou "client-side
+  exception" hned po otevření stránky. Příčina: každá stránka si sama
+  nezávisle znovu zjišťovala přihlášeného uživatele, a když se data
+  stránky (rezervace, dokumenty…) načetla rychleji, appka se pokusila
+  přečíst údaje z ještě nenačteného uživatele. Profil se teď zjišťuje
+  jen jednou nahoře a předává se dál, takže se ten závod už nemůže stát
+
 ## 1.13
 - Appku teď jde přidat na plochu telefonu jako skutečnou ikonu (vlastní
   ikonka, otevře se bez adresního řádku prohlížeče) – přidán web manifest

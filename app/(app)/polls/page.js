@@ -1,12 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { useProfile } from "@/lib/useProfile";
+import { useCurrentProfile } from "@/lib/ProfileContext";
 import { logActivity } from "@/lib/activity";
 import { Plus, X, Trash2 } from "lucide-react";
 
 export default function PollsPage() {
-  const { profile } = useProfile();
+  const profile = useCurrentProfile();
   const [polls, setPolls] = useState([]);
   const [options, setOptions] = useState([]);
   const [votes, setVotes] = useState([]);
