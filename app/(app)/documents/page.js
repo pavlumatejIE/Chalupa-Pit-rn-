@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useProfile } from "@/lib/useProfile";
 import { logActivity } from "@/lib/activity";
+import { uploadContentType } from "@/lib/uploadHelpers";
 import { FileText, Plus, X, Tag, Trash2 } from "lucide-react";
 
 export default function DocumentsPage() {
@@ -75,7 +76,9 @@ export default function DocumentsPage() {
     if (!title.trim() || !file) return;
     setUploading(true);
     const path = `${profile.id}/${Date.now()}-${file.name}`;
-    const { error: upErr } = await supabase.storage.from("documents").upload(path, file);
+    const { error: upErr } = await supabase.storage.from("documents").upload(path, file, {
+      contentType: uploadContentType(file),
+    });
     if (!upErr) {
       const { data } = supabase.storage.from("documents").getPublicUrl(path);
       await supabase.from("documents").insert({

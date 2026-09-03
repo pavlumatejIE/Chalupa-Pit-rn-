@@ -4,6 +4,16 @@
 obrazovce), takže po nasazení hned poznáš, jestli se nová verze opravdu
 dostala na Netlify.
 
+## 1.13
+- Appku teď jde přidat na plochu telefonu jako skutečnou ikonu (vlastní
+  ikonka, otevře se bez adresního řádku prohlížeče) – přidán web manifest
+  a ikony pro Android i iOS
+
+## 1.12
+- Oprava: nahrané .txt (a další textové) soubory s češtinou se mohly
+  zobrazit s rozsypanou diakritikou – appka teď explicitně řekne
+  prohlížeči, že jde o UTF-8, takže se text zobrazí správně
+
 ## 1.11
 - Oprava: chybějící SUPABASE_SERVICE_ROLE_KEY dřív shodila celé sestavení
   webu na Netlify. Teď se appka sestaví v pořádku vždy – bez klíče jen

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useProfile } from "@/lib/useProfile";
 import { logActivity } from "@/lib/activity";
+import { uploadContentType } from "@/lib/uploadHelpers";
 import { Paperclip, X, Trash2 } from "lucide-react";
 
 const IMAGE_EXT = ["jpg", "jpeg", "png", "gif", "webp"];
@@ -40,7 +41,9 @@ export default function BoardPage() {
 
     if (file) {
       const path = `${profile.id}/${Date.now()}-${file.name}`;
-      const { error: upErr } = await supabase.storage.from("attachments").upload(path, file);
+      const { error: upErr } = await supabase.storage.from("attachments").upload(path, file, {
+        contentType: uploadContentType(file),
+      });
       if (!upErr) {
         const { data } = supabase.storage.from("attachments").getPublicUrl(path);
         attachment_url = data.publicUrl;
