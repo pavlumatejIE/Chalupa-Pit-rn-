@@ -9,7 +9,11 @@ na desktopu boční panel, na mobilu spodní lišta a přizpůsobené formulář
 2. Po vytvoření otevři **SQL Editor** → New query, vlož celý obsah souboru
    `supabase/schema.sql` a spusť ho. Tím vzniknou tabulky, zabezpečení (RLS)
    i úložiště na dokumenty a přílohy.
-3. V **Project Settings → API** si zkopíruj `Project URL` a `anon public` klíč.
+3. V **Project Settings → API** si zkopíruj `Project URL`, `anon public` klíč
+   a **`service_role` klíč** (klikni na "Reveal" – je skrytý). Ten poslední
+   je tajný, nikdy ho nedávej do veřejného kódu ani do proměnné s prefixem
+   `NEXT_PUBLIC_` – používá se jen v serverové části appky (mazání uživatelů
+   a nastavování hesel administrátorem).
 4. V **Authentication → Providers** nech zapnuté přihlášení e-mailem/heslem
    (výchozí nastavení).
 5. V **Authentication → URL Configuration** nastav Site URL na adresu, na
@@ -58,6 +62,8 @@ příslušníky.
 4. V **Site settings → Environment variables** přidej:
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY` (bez prefixu NEXT_PUBLIC_ – zůstává jen na
+     serveru, Netlify Functions k němu mají přístup, prohlížeč ne)
 5. Deploy. Po nasazení nezapomeň v Supabase (**Authentication → URL
    Configuration**) nastavit ostrou Netlify adresu jako Site URL.
 

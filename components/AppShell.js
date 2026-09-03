@@ -13,12 +13,14 @@ import {
   LogOut,
   BarChart3,
   Image as ImageIcon,
+  ListChecks,
 } from "lucide-react";
 
 const TABS = [
   { href: "/calendar", label: "Kalendář", icon: CalendarIcon },
   { href: "/board", label: "Nástěnka", icon: MessageSquare },
   { href: "/documents", label: "Dokumenty", icon: FileText },
+  { href: "/tasks", label: "Co je potřeba", icon: ListChecks },
   { href: "/polls", label: "Hlasování", icon: BarChart3 },
   { href: "/photos", label: "Fotky", icon: ImageIcon },
   { href: "/payments", label: "Platby", icon: CreditCard },

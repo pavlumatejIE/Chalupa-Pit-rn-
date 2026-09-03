@@ -4,6 +4,15 @@
 obrazovce), takže po nasazení hned poznáš, jestli se nová verze opravdu
 dostala na Netlify.
 
+## 1.10
+- Nová sekce „Co je potřeba" – práce a nákupy s termínem, přiřazením,
+  odhadem nákladu (Kč/hodin/člověkodní), žebříčkem „kdo udělal nejvíc"
+  a součtem nákladů
+- Administrace: nové tlačítko „Nastavit heslo" – admin může uživateli
+  rovnou nastavit nové heslo bez e-mailového odkazu
+- Administrace: možnost natrvalo smazat uživatele (s potvrzením)
+- Vyžaduje nový tajný klíč SUPABASE_SERVICE_ROLE_KEY v Netlify (viz README)
+
 ## 1.09
 - Dokumenty přepracované na odstavce podle kategorie – každá kategorie má
   vlastní blok se svými dokumenty (i dokumenty bez kategorie mají svůj blok)

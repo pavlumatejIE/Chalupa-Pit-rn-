@@ -243,6 +243,26 @@ create policy "photos_select" on public.photos for select using (public.is_appro
 create policy "photos_insert" on public.photos for insert with check (public.is_approved());
 create policy "photos_delete" on public.photos for delete using (uploaded_by = auth.uid() or public.is_admin());
 
+-- ---------- CO JE POTŘEBA (práce a nákupy) ----------
+create table public.tasks (
+  id uuid primary key default gen_random_uuid(),
+  kind text not null check (kind in ('prace', 'nakup')),
+  popis text not null,
+  termin date,
+  prirazeno uuid references public.profiles(id) on delete set null,
+  cena numeric,
+  jednotka text check (jednotka in ('czk', 'hours', 'persondays')),
+  zadal uuid references public.profiles(id) on delete set null,
+  hotovo boolean not null default false,
+  created_at timestamptz not null default now()
+);
+
+alter table public.tasks enable row level security;
+create policy "tasks_select" on public.tasks for select using (public.is_approved());
+create policy "tasks_insert" on public.tasks for insert with check (auth.uid() = zadal and public.is_approved());
+create policy "tasks_update" on public.tasks for update using (auth.uid() = zadal or auth.uid() = prirazeno or public.is_admin());
+create policy "tasks_delete" on public.tasks for delete using (auth.uid() = zadal or public.is_admin());
+
 -- ============================================================
 -- STORAGE (soubory a fotky)
 -- ============================================================
