@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useProfile } from "@/lib/useProfile";
 import { logActivity } from "@/lib/activity";
@@ -19,6 +19,8 @@ export default function DocumentsPage() {
   const [visibility, setVisibility] = useState("all");
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [filterYear, setFilterYear] = useState(null);
+  const [filterCategoryId, setFilterCategoryId] = useState(null);
 
   async function load() {
     const { data } = await supabase
@@ -55,9 +57,15 @@ export default function DocumentsPage() {
 
   async function removeCategory(id) {
     setCategoryListError("");
-    const { error } = await supabase.from("document_categories").delete().eq("id", id);
+    const { data, error } = await supabase.from("document_categories").delete().eq("id", id).select();
     if (error) {
       setCategoryListError("Nepodařilo se smazat kategorii: " + error.message);
+      return;
+    }
+    if (!data || data.length === 0) {
+      setCategoryListError(
+        "Kategorie se nesmazala – databáze to zamítla kvůli oprávnění. Zkontroluj, že máš v Supabase spuštěnou migraci migration_5_category_delete.sql."
+      );
       return;
     }
     load();
@@ -95,6 +103,33 @@ export default function DocumentsPage() {
     load();
   }
 
+  const years = useMemo(() => {
+    const set = new Set(documents.map((d) => new Date(d.created_at).getFullYear()));
+    return Array.from(set).sort((a, b) => b - a);
+  }, [documents]);
+
+  const filteredDocuments = useMemo(() => {
+    return documents.filter((d) => {
+      if (filterYear && new Date(d.created_at).getFullYear() !== filterYear) return false;
+      if (filterCategoryId && d.category_id !== filterCategoryId) return false;
+      return true;
+    });
+  }, [documents, filterYear, filterCategoryId]);
+
+  const groups = useMemo(() => {
+    const withCategory = categories.map((c) => ({
+      id: c.id,
+      name: c.name,
+      docs: filteredDocuments.filter((d) => d.category_id === c.id),
+    }));
+    const uncategorized = {
+      id: null,
+      name: "Bez kategorie",
+      docs: filteredDocuments.filter((d) => !d.category_id),
+    };
+    return [...withCategory, uncategorized].filter((g) => g.docs.length > 0);
+  }, [categories, filteredDocuments]);
+
   return (
     <div>
       <div style={{ marginBottom: 24 }}>
@@ -112,74 +147,132 @@ export default function DocumentsPage() {
       </div>
 
       {categories.length > 0 && (
-        <div style={{ marginBottom: 24 }}>
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ fontSize: 12, color: "#8a8a82", marginBottom: 8 }}>Kategorie</div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-            {categories.map((c) => (
-              <span
-                key={c.id}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 6,
-                  fontSize: 13,
-                  padding: "5px 6px 5px 12px",
-                  borderRadius: 20,
-                  background: "#EAF3DE",
-                  color: "#3B6D11",
-                  border: "1px solid #d7e6c4",
-                }}
-              >
-                {c.name}
-                {profile.role === "admin" && (
-                  <button
-                    className="icon-btn"
-                    style={{ padding: 2, color: "#3B6D11" }}
-                    onClick={() => removeCategory(c.id)}
-                    title="Smazat kategorii"
-                  >
-                    <X size={13} />
-                  </button>
-                )}
-              </span>
-            ))}
+            {categories.map((c) => {
+              const active = filterCategoryId === c.id;
+              return (
+                <span
+                  key={c.id}
+                  onClick={() => setFilterCategoryId(active ? null : c.id)}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                    fontSize: 13,
+                    padding: "5px 6px 5px 12px",
+                    borderRadius: 20,
+                    background: active ? "#3B6D11" : "#EAF3DE",
+                    color: active ? "#fff" : "#3B6D11",
+                    border: "1px solid " + (active ? "#3B6D11" : "#d7e6c4"),
+                    cursor: "pointer",
+                  }}
+                >
+                  {c.name}
+                  {profile.role === "admin" && (
+                    <button
+                      className="icon-btn"
+                      style={{ padding: 2, color: active ? "#fff" : "#3B6D11" }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeCategory(c.id);
+                      }}
+                      title="Smazat kategorii"
+                    >
+                      <X size={13} />
+                    </button>
+                  )}
+                </span>
+              );
+            })}
           </div>
           {categoryListError && <div style={{ fontSize: 13, color: "var(--roof)", marginTop: 8 }}>{categoryListError}</div>}
         </div>
       )}
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        {documents.map((d) => (
-          <div key={d.id} style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 4px", borderBottom: "1px solid #ece8dd" }}>
-            <a href={d.file_url} target="_blank" rel="noreferrer" style={{ display: "flex", alignItems: "center", gap: 14, flex: 1, minWidth: 0, textDecoration: "none", color: "inherit" }}>
-              <FileText size={20} color="var(--roof)" />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 15, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.title}</div>
-                <div style={{ fontSize: 12, color: "#8a8a82" }}>
-                  nahrál/a {d.profiles?.full_name}
-                  {d.document_categories?.name && ` · ${d.document_categories.name}`}
-                </div>
-              </div>
-            </a>
-            <span
-              style={{
-                fontSize: 12,
-                padding: "4px 10px",
-                borderRadius: 10,
-                background: d.visible_to === "all" ? "#F3F5EF" : "#F6E9D8",
-                color: d.visible_to === "all" ? "var(--moss)" : "#9a6a26",
-                flexShrink: 0,
-              }}
-            >
-              {d.visible_to === "all" ? "Pro všechny" : "Jen admini"}
-            </span>
-            {(d.uploaded_by === profile.id || profile.role === "admin") && (
-              <button className="icon-btn danger" onClick={(e) => removeDocument(d.id, e)} title="Smazat">
-                <Trash2 size={16} />
-              </button>
-            )}
+      {years.length > 0 && (
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ fontSize: 12, color: "#8a8a82", marginBottom: 8 }}>Rok</div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {years.map((y) => {
+              const active = filterYear === y;
+              return (
+                <span
+                  key={y}
+                  onClick={() => setFilterYear(active ? null : y)}
+                  style={{
+                    fontSize: 13,
+                    padding: "5px 14px",
+                    borderRadius: 20,
+                    background: active ? "var(--roof)" : "#F6E9D8",
+                    color: active ? "#fff" : "#9a6a26",
+                    border: "1px solid " + (active ? "var(--roof)" : "#eeddc4"),
+                    cursor: "pointer",
+                  }}
+                >
+                  {y}
+                </span>
+              );
+            })}
           </div>
-        ))}
-      </div>
+        </div>
+      )}
+
+      {(filterYear || filterCategoryId) && (
+        <button
+          className="btn-ghost"
+          style={{ fontSize: 13, marginBottom: 20 }}
+          onClick={() => {
+            setFilterYear(null);
+            setFilterCategoryId(null);
+          }}
+        >
+          Zrušit filtr
+        </button>
+      )}
+
+      {groups.length === 0 && <div style={{ fontSize: 14, color: "#8a8a82" }}>Žádné dokumenty neodpovídají filtru.</div>}
+
+      {groups.map((g) => (
+        <div key={g.id || "none"} style={{ marginBottom: 32 }}>
+          <div style={{ fontFamily: "var(--serif)", fontSize: 17, fontWeight: 600, marginBottom: 4, paddingBottom: 8, borderBottom: "2px solid var(--border)" }}>
+            {g.name}
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            {g.docs.map((d) => (
+              <div key={d.id} style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 4px", borderBottom: "1px solid #ece8dd" }}>
+                <a href={d.file_url} target="_blank" rel="noreferrer" style={{ display: "flex", alignItems: "center", gap: 14, flex: 1, minWidth: 0, textDecoration: "none", color: "inherit" }}>
+                  <FileText size={20} color="var(--roof)" />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 15, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.title}</div>
+                    <div style={{ fontSize: 12, color: "#8a8a82" }}>
+                      nahrál/a {d.profiles?.full_name} · {new Date(d.created_at).toLocaleDateString("cs-CZ")}
+                    </div>
+                  </div>
+                </a>
+                <span
+                  style={{
+                    fontSize: 12,
+                    padding: "4px 10px",
+                    borderRadius: 10,
+                    background: d.visible_to === "all" ? "#F3F5EF" : "#F6E9D8",
+                    color: d.visible_to === "all" ? "var(--moss)" : "#9a6a26",
+                    flexShrink: 0,
+                  }}
+                >
+                  {d.visible_to === "all" ? "Pro všechny" : "Jen admini"}
+                </span>
+                {(d.uploaded_by === profile.id || profile.role === "admin") && (
+                  <button className="icon-btn danger" onClick={(e) => removeDocument(d.id, e)} title="Smazat">
+                    <Trash2 size={16} />
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
 
       {showForm && (
         <div

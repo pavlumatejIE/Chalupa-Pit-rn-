@@ -4,6 +4,17 @@
 obrazovce), takže po nasazení hned poznáš, jestli se nová verze opravdu
 dostala na Netlify.
 
+## 1.09
+- Dokumenty přepracované na odstavce podle kategorie – každá kategorie má
+  vlastní blok se svými dokumenty (i dokumenty bez kategorie mají svůj blok)
+- Přidán filtr podle roku nahrání a podle kategorie – klikni na štítek a
+  zobrazí se jen odpovídající dokumenty, další klik filtr zruší
+
+## 1.08
+- Oprava: mazání kategorie se dřív mohlo tiše nezdařit bez jakékoli hlášky
+  (databáze u zamítnutého mazání nevrací chybu, jen smaže 0 řádků) –
+  appka to teď pozná a řekne přesně, v čem je problém
+
 ## 1.07
 - Oprava: sekce Dokumenty měla omylem zdvojený kód (dva seznamy kategorií,
   dvě funkce na mazání) – vyčištěno na jedno přehledné místo
