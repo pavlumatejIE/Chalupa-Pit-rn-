@@ -4,6 +4,12 @@
 obrazovce), takže po nasazení hned poznáš, jestli se nová verze opravdu
 dostala na Netlify.
 
+## 1.11
+- Oprava: chybějící SUPABASE_SERVICE_ROLE_KEY dřív shodila celé sestavení
+  webu na Netlify. Teď se appka sestaví v pořádku vždy – bez klíče jen
+  tlačítka „Nastavit heslo“ a mazání uživatele zobrazí srozumitelnou
+  chybovou hlášku místo pádu celého webu
+
 ## 1.10
 - Nová sekce „Co je potřeba" – práce a nákupy s termínem, přiřazením,
   odhadem nákladu (Kč/hodin/člověkodní), žebříčkem „kdo udělal nejvíc"
