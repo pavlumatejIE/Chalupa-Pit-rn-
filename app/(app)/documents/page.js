@@ -2,13 +2,18 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useProfile } from "@/lib/useProfile";
-import { FileText, Plus, X } from "lucide-react";
+import { logActivity } from "@/lib/activity";
+import { FileText, Plus, X, Tag } from "lucide-react";
 
 export default function DocumentsPage() {
   const { profile } = useProfile();
   const [documents, setDocuments] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [showForm, setShowForm] = useState(false);
+  const [showCategoryForm, setShowCategoryForm] = useState(false);
+  const [newCategory, setNewCategory] = useState("");
   const [title, setTitle] = useState("");
+  const [categoryId, setCategoryId] = useState("");
   const [visibility, setVisibility] = useState("all");
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -16,14 +21,28 @@ export default function DocumentsPage() {
   async function load() {
     const { data } = await supabase
       .from("documents")
-      .select("*, profiles(full_name)")
+      .select("*, profiles(full_name), document_categories(id, name)")
       .order("created_at", { ascending: false });
     setDocuments(data || []);
+
+    const { data: cats } = await supabase.from("document_categories").select("*").order("name");
+    setCategories(cats || []);
   }
 
   useEffect(() => {
     load();
   }, []);
+
+  async function addCategory() {
+    if (!newCategory.trim()) return;
+    const { error } = await supabase.from("document_categories").insert({ name: newCategory.trim() });
+    if (!error) {
+      await logActivity(profile.id, `přidal/a kategorii dokumentů – ${newCategory.trim()}`);
+    }
+    setNewCategory("");
+    setShowCategoryForm(false);
+    load();
+  }
 
   async function upload() {
     if (!title.trim() || !file) return;
@@ -37,11 +56,14 @@ export default function DocumentsPage() {
         title,
         file_url: data.publicUrl,
         visible_to: visibility,
+        category_id: categoryId || null,
       });
+      await logActivity(profile.id, `nahrál/a nový dokument – ${title}`);
     }
     setTitle("");
     setFile(null);
     setVisibility("all");
+    setCategoryId("");
     setShowForm(false);
     setUploading(false);
     load();
@@ -54,9 +76,14 @@ export default function DocumentsPage() {
         <p style={{ margin: "4px 0 0", color: "#6b6a63", fontSize: 14 }}>Sdílené dokumenty k chalupě – revize, smlouvy, návody.</p>
       </div>
 
-      <button className="btn-primary" style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 20 }} onClick={() => setShowForm(true)}>
-        <Plus size={16} /> Nahrát dokument
-      </button>
+      <div style={{ display: "flex", gap: 10, marginBottom: 20, flexWrap: "wrap" }}>
+        <button className="btn-primary" style={{ display: "flex", alignItems: "center", gap: 6 }} onClick={() => setShowForm(true)}>
+          <Plus size={16} /> Nahrát dokument
+        </button>
+        <button className="btn-ghost" style={{ display: "flex", alignItems: "center", gap: 6 }} onClick={() => setShowCategoryForm(true)}>
+          <Tag size={16} /> Přidat kategorii
+        </button>
+      </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
         {documents.map((d) => (
@@ -70,7 +97,10 @@ export default function DocumentsPage() {
             <FileText size={18} color="var(--roof)" />
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 14, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.title}</div>
-              <div style={{ fontSize: 11, color: "#8a8a82" }}>nahrál/a {d.profiles?.full_name}</div>
+              <div style={{ fontSize: 11, color: "#8a8a82" }}>
+                nahrál/a {d.profiles?.full_name}
+                {d.document_categories?.name && ` · ${d.document_categories.name}`}
+              </div>
             </div>
             <span
               style={{
@@ -110,6 +140,17 @@ export default function DocumentsPage() {
                 <input type="file" className="input" onChange={(e) => setFile(e.target.files?.[0] || null)} style={{ marginTop: 4, padding: 6 }} />
               </label>
               <label style={{ fontSize: 12, color: "#6b6a63" }}>
+                Kategorie (volitelné)
+                <select className="input" value={categoryId} onChange={(e) => setCategoryId(e.target.value)} style={{ marginTop: 4 }}>
+                  <option value="">Bez kategorie</option>
+                  {categories.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label style={{ fontSize: 12, color: "#6b6a63" }}>
                 Kdo to může vidět
                 <select className="input" value={visibility} onChange={(e) => setVisibility(e.target.value)} style={{ marginTop: 4 }}>
                   <option value="all">Všichni schválení uživatelé</option>
@@ -123,6 +164,40 @@ export default function DocumentsPage() {
               </button>
               <button className="btn-primary" onClick={upload} disabled={uploading || !title || !file}>
                 {uploading ? "Nahrávám…" : "Nahrát"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showCategoryForm && (
+        <div
+          style={{ position: "fixed", inset: 0, background: "rgba(43,42,38,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 50 }}
+          onClick={() => setShowCategoryForm(false)}
+        >
+          <div className="modal-box" style={{ background: "#fff", borderRadius: 10, padding: 22, width: 340 }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
+              <div style={{ fontFamily: "var(--serif)", fontSize: 16 }}>Přidat kategorii</div>
+              <button className="icon-btn" onClick={() => setShowCategoryForm(false)}>
+                <X size={18} />
+              </button>
+            </div>
+            <label style={{ fontSize: 12, color: "#6b6a63" }}>
+              Název kategorie
+              <input
+                className="input"
+                value={newCategory}
+                onChange={(e) => setNewCategory(e.target.value)}
+                placeholder="např. Smlouvy, Revize, Návody"
+                style={{ marginTop: 4 }}
+              />
+            </label>
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 20 }}>
+              <button className="btn-ghost" onClick={() => setShowCategoryForm(false)}>
+                Zrušit
+              </button>
+              <button className="btn-primary" onClick={addCategory} disabled={!newCategory.trim()}>
+                Přidat
               </button>
             </div>
           </div>

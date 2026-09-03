@@ -2,6 +2,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
+import { APP_VERSION } from "@/lib/version";
 import {
   Calendar as CalendarIcon,
   MessageSquare,
@@ -10,12 +11,16 @@ import {
   ShieldCheck,
   Home,
   LogOut,
+  BarChart3,
+  Image as ImageIcon,
 } from "lucide-react";
 
 const TABS = [
   { href: "/calendar", label: "Kalendář", icon: CalendarIcon },
   { href: "/board", label: "Nástěnka", icon: MessageSquare },
   { href: "/documents", label: "Dokumenty", icon: FileText },
+  { href: "/polls", label: "Hlasování", icon: BarChart3 },
+  { href: "/photos", label: "Fotky", icon: ImageIcon },
   { href: "/payments", label: "Platby", icon: CreditCard },
 ];
 
@@ -39,7 +44,7 @@ export default function AppShell({ profile, children }) {
           </div>
           <div>
             <div style={{ fontFamily: "var(--serif)", fontSize: 15, fontWeight: 600, lineHeight: 1.1 }}>Chalupa</div>
-            <div style={{ fontSize: 11, color: "#8a8a82" }}>Pitárné</div>
+            <div style={{ fontSize: 11, color: "#8a8a82" }}>Pitárné · v{APP_VERSION}</div>
           </div>
         </div>
 

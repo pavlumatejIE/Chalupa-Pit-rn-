@@ -3,6 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
+import { APP_VERSION } from "@/lib/version";
 import { Home } from "lucide-react";
 
 export default function LoginPage() {
@@ -83,6 +84,7 @@ export default function LoginPage() {
         <div style={{ fontSize: 13, color: "#6b6a63", marginTop: 18, textAlign: "center" }}>
           Nemáš účet? <Link href="/register" style={{ color: "var(--roof)" }}>Zaregistruj se</Link>
         </div>
+        <div style={{ fontSize: 11, color: "#c2c0b6", marginTop: 14, textAlign: "center" }}>verze {APP_VERSION}</div>
       </div>
     </div>
   );

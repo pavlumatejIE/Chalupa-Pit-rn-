@@ -136,8 +136,47 @@ a {
   display: none;
 }
 
+/* ---------- Scrolling photo strip beside the calendar ---------- */
+.photo-strip-aside {
+  width: 150px;
+  flex-shrink: 0;
+}
+.photo-strip-viewport {
+  height: 560px;
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+.photo-strip-track {
+  display: flex;
+  flex-direction: column;
+  animation: photo-scroll-down 50s linear infinite;
+}
+.photo-strip-img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  display: block;
+}
+@keyframes photo-scroll-down {
+  from {
+    transform: translateY(-50%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .photo-strip-track {
+    animation: none;
+  }
+}
+
 /* ---------- Mobile layout ---------- */
 @media (max-width: 768px) {
+  .photo-strip-aside {
+    display: none;
+  }
   .shell {
     flex-direction: column;
   }

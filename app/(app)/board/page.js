@@ -2,7 +2,15 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useProfile } from "@/lib/useProfile";
-import { Paperclip } from "lucide-react";
+import { logActivity } from "@/lib/activity";
+import { Paperclip, X } from "lucide-react";
+
+const IMAGE_EXT = ["jpg", "jpeg", "png", "gif", "webp"];
+function isImage(name) {
+  if (!name) return false;
+  const ext = name.split(".").pop().toLowerCase();
+  return IMAGE_EXT.includes(ext);
+}
 
 export default function BoardPage() {
   const { profile } = useProfile();
@@ -10,6 +18,7 @@ export default function BoardPage() {
   const [text, setText] = useState("");
   const [file, setFile] = useState(null);
   const [sending, setSending] = useState(false);
+  const [lightbox, setLightbox] = useState(null);
 
   async function load() {
     const { data } = await supabase
@@ -45,6 +54,7 @@ export default function BoardPage() {
       attachment_url,
       attachment_name,
     });
+    await logActivity(profile.id, "přidal/a příspěvek na nástěnku");
 
     setText("");
     setFile(null);
@@ -98,7 +108,24 @@ export default function BoardPage() {
                 <span style={{ fontSize: 11, color: "#8a8a82" }}>{new Date(m.created_at).toLocaleString("cs-CZ")}</span>
               </div>
               <p style={{ margin: "4px 0 0", fontSize: 14, lineHeight: 1.5 }}>{m.content}</p>
-              {m.attachment_url && (
+              {m.attachment_url && isImage(m.attachment_name) && (
+                <img
+                  src={m.attachment_url}
+                  alt={m.attachment_name}
+                  onClick={() => setLightbox(m.attachment_url)}
+                  style={{
+                    marginTop: 8,
+                    width: 160,
+                    height: 120,
+                    objectFit: "cover",
+                    borderRadius: 8,
+                    border: "1px solid var(--border)",
+                    cursor: "pointer",
+                    display: "block",
+                  }}
+                />
+              )}
+              {m.attachment_url && !isImage(m.attachment_name) && (
                 <a
                   href={m.attachment_url}
                   target="_blank"
@@ -124,6 +151,27 @@ export default function BoardPage() {
           </div>
         ))}
       </div>
+
+      {lightbox && (
+        <div
+          onClick={() => setLightbox(null)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(43,42,38,0.85)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 60,
+            padding: 20,
+          }}
+        >
+          <button className="icon-btn" style={{ position: "absolute", top: 20, right: 20, color: "#fff" }} onClick={() => setLightbox(null)}>
+            <X size={26} />
+          </button>
+          <img src={lightbox} alt="" style={{ maxWidth: "90vw", maxHeight: "90vh", borderRadius: 8 }} onClick={(e) => e.stopPropagation()} />
+        </div>
+      )}
     </div>
   );
 }

@@ -3,7 +3,16 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useProfile } from "@/lib/useProfile";
 import { czechHolidays, fmtDate } from "@/lib/holidays";
+import { logActivity } from "@/lib/activity";
+import PhotoStrip from "@/components/PhotoStrip";
 import { ChevronLeft, ChevronRight, X, Trash2 } from "lucide-react";
+
+function fmtActivityDate(dateStr) {
+  const d = new Date(dateStr);
+  const date = d.toLocaleDateString("cs-CZ");
+  const time = d.toLocaleTimeString("cs-CZ", { hour: "2-digit", minute: "2-digit" });
+  return `${date} ${time}`;
+}
 
 const today = new Date();
 
@@ -14,6 +23,7 @@ export default function CalendarPage() {
   const [profiles, setProfiles] = useState({});
   const [modalDate, setModalDate] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activity, setActivity] = useState([]);
 
   const holidays = useMemo(() => czechHolidays(cursor.getFullYear()), [cursor]);
   const monthLabel = cursor.toLocaleDateString("cs-CZ", { month: "long", year: "numeric" });
@@ -30,6 +40,14 @@ export default function CalendarPage() {
       .select("*")
       .order("date_from", { ascending: true });
     setReservations(res || []);
+
+    const { data: log } = await supabase
+      .from("activity_log")
+      .select("*, profiles(full_name)")
+      .order("created_at", { ascending: false })
+      .limit(15);
+    setActivity(log || []);
+
     setLoading(false);
   }
 
@@ -58,6 +76,7 @@ export default function CalendarPage() {
   async function addReservation(payload) {
     const { error } = await supabase.from("reservations").insert(payload);
     if (!error) {
+      await logActivity(payload.user_id, `přidal/a rezervaci ${payload.date_from} – ${payload.date_to}`);
       await load();
       setModalDate(null);
     }
@@ -71,7 +90,8 @@ export default function CalendarPage() {
   const weekLabels = ["Po", "Út", "St", "Čt", "Pá", "So", "Ne"];
 
   return (
-    <div>
+    <div style={{ display: "flex", gap: 28, alignItems: "flex-start" }}>
+      <div style={{ flex: 1, minWidth: 0 }}>
       <div style={{ marginBottom: 20 }}>
         <h2 style={{ fontFamily: "var(--serif)", fontSize: 22, fontWeight: 600, margin: 0 }}>Kalendář rezervací</h2>
         <p style={{ margin: "4px 0 0", color: "#6b6a63", fontSize: 14 }}>
@@ -155,6 +175,20 @@ export default function CalendarPage() {
         </span>
       </div>
 
+      <div style={{ marginTop: 32 }}>
+        <div style={{ fontSize: 12, textTransform: "uppercase", color: "#8a8a82", marginBottom: 10 }}>Poslední události</div>
+        {activity.length === 0 && <div style={{ fontSize: 13, color: "#8a8a82" }}>Zatím žádná aktivita.</div>}
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {activity.map((a) => (
+            <div key={a.id} style={{ fontSize: 13, lineHeight: 1.5, borderBottom: "1px solid #ece8dd", paddingBottom: 8 }}>
+              <span style={{ color: "#8a8a82" }}>{fmtActivityDate(a.created_at)}</span>{" "}
+              <span style={{ fontWeight: 500 }}>{a.profiles?.full_name || "Neznámý uživatel"}</span>{" "}
+              <span>{a.description}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {modalDate && (
         <ReservationModal
           date={modalDate}
@@ -165,6 +199,9 @@ export default function CalendarPage() {
           onDelete={removeReservation}
         />
       )}
+      </div>
+
+      <PhotoStrip />
     </div>
   );
 }
