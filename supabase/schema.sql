@@ -224,6 +224,7 @@ create policy "poll_options_insert" on public.poll_options for insert with check
 create policy "poll_votes_select" on public.poll_votes for select using (public.is_approved());
 create policy "poll_votes_insert" on public.poll_votes for insert with check (auth.uid() = user_id and public.is_approved());
 create policy "poll_votes_update" on public.poll_votes for update using (auth.uid() = user_id);
+create policy "polls_delete" on public.polls for delete using (created_by = auth.uid() or public.is_admin());
 
 -- ---------- FOTKY ----------
 create table public.photos (
@@ -236,6 +237,7 @@ create table public.photos (
 alter table public.photos enable row level security;
 create policy "photos_select" on public.photos for select using (public.is_approved());
 create policy "photos_insert" on public.photos for insert with check (public.is_approved());
+create policy "photos_delete" on public.photos for delete using (uploaded_by = auth.uid() or public.is_admin());
 
 -- ============================================================
 -- STORAGE (soubory a fotky)

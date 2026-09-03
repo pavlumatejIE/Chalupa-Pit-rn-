@@ -30,8 +30,8 @@ a {
 .input {
   border: 1px solid #d9d4c5;
   border-radius: 6px;
-  padding: 9px 10px;
-  font-size: 14px;
+  padding: 11px 13px;
+  font-size: 15px;
   font-family: var(--sans);
   color: var(--ink);
   background: #fff;
@@ -43,8 +43,8 @@ a {
   color: #fff;
   border: none;
   border-radius: 6px;
-  padding: 10px 18px;
-  font-size: 14px;
+  padding: 12px 22px;
+  font-size: 15px;
   font-weight: 500;
   cursor: pointer;
 }
@@ -60,8 +60,8 @@ a {
   background: transparent;
   border: 1px solid #d9d4c5;
   border-radius: 6px;
-  padding: 9px 16px;
-  font-size: 14px;
+  padding: 11px 20px;
+  font-size: 15px;
   color: var(--ink);
   cursor: pointer;
 }
@@ -78,12 +78,27 @@ a {
 .icon-btn:hover {
   color: var(--ink);
 }
+.icon-btn.danger:hover {
+  color: var(--roof);
+}
 
 .card {
   border: 1px solid var(--border);
   border-radius: 8px;
   background: #fff;
-  padding: 16px;
+  padding: 22px;
+}
+
+.page-title {
+  font-family: var(--serif);
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0;
+}
+.page-sub {
+  margin: 6px 0 0;
+  color: #6b6a63;
+  font-size: 15px;
 }
 
 /* ---------- App shell: desktop sidebar + mobile bottom bar ---------- */
@@ -93,9 +108,9 @@ a {
 }
 
 .sidebar {
-  width: 220px;
+  width: 260px;
   border-right: 1px solid var(--border);
-  padding: 20px 14px;
+  padding: 26px 18px;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
@@ -104,10 +119,10 @@ a {
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
+  gap: 12px;
+  padding: 12px 16px;
   border-radius: 6px;
-  font-size: 14px;
+  font-size: 15px;
   color: #7a7768;
   cursor: pointer;
   border: none;
@@ -127,8 +142,8 @@ a {
 
 .content {
   flex: 1;
-  padding: 28px 36px;
-  max-width: 760px;
+  padding: 44px 56px;
+  max-width: 1180px;
   width: 100%;
 }
 
@@ -136,25 +151,34 @@ a {
   display: none;
 }
 
+.day-cell {
+  min-height: 132px;
+  padding: 12px;
+}
+
+.calendar-grid {
+  gap: 10px;
+}
+
 /* ---------- Scrolling photo strip beside the calendar ---------- */
 .photo-strip-aside {
-  width: 150px;
+  width: 220px;
   flex-shrink: 0;
 }
 .photo-strip-viewport {
-  height: 560px;
+  height: 820px;
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: 10px;
   border: 1px solid var(--border);
 }
 .photo-strip-track {
   display: flex;
   flex-direction: column;
-  animation: photo-scroll-down 50s linear infinite;
+  animation: photo-scroll-down 55s linear infinite;
 }
 .photo-strip-img {
   width: 100%;
-  height: 150px;
+  height: 205px;
   object-fit: cover;
   display: block;
 }
@@ -226,5 +250,14 @@ a {
   }
   .form-row {
     flex-direction: column !important;
+  }
+  .card {
+    padding: 14px !important;
+  }
+  .page-title {
+    font-size: 21px !important;
+  }
+  .page-sub {
+    font-size: 13px !important;
   }
 }

@@ -38,32 +38,32 @@ export default function AppShell({ profile, children }) {
     <div className="shell">
       {/* Desktop sidebar */}
       <div className="sidebar">
-        <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "0 8px 20px", borderBottom: "1px solid var(--border)", marginBottom: 16 }}>
-          <div style={{ width: 34, height: 34, borderRadius: 8, background: "var(--roof)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Home size={17} color="#fff" />
+        <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "0 8px 24px", borderBottom: "1px solid var(--border)", marginBottom: 20 }}>
+          <div style={{ width: 42, height: 42, borderRadius: 9, background: "var(--roof)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Home size={21} color="#fff" />
           </div>
           <div>
-            <div style={{ fontFamily: "var(--serif)", fontSize: 15, fontWeight: 600, lineHeight: 1.1 }}>Chalupa</div>
-            <div style={{ fontSize: 11, color: "#8a8a82" }}>Pitárné · v{APP_VERSION}</div>
+            <div style={{ fontFamily: "var(--serif)", fontSize: 17, fontWeight: 600, lineHeight: 1.1 }}>Chalupa</div>
+            <div style={{ fontSize: 12, color: "#8a8a82" }}>Pitárné · v{APP_VERSION}</div>
           </div>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 3, flex: 1 }}>
           {tabs.map((t) => (
             <Link key={t.href} href={t.href} className={`nav-item ${pathname === t.href ? "active" : ""}`}>
-              <t.icon size={16} />
+              <t.icon size={18} />
               {t.label}
             </Link>
           ))}
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 8px", borderTop: "1px solid var(--border)" }}>
-          <div style={{ fontSize: 12, flex: 1 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 8px", borderTop: "1px solid var(--border)" }}>
+          <div style={{ fontSize: 13, flex: 1 }}>
             <div>{profile?.full_name}</div>
             <div style={{ color: "#8a8a82" }}>{profile?.role === "admin" ? "administrátor" : "člen rodiny"}</div>
           </div>
           <button className="icon-btn" onClick={signOut} title="Odhlásit se">
-            <LogOut size={16} />
+            <LogOut size={18} />
           </button>
         </div>
       </div>

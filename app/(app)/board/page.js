@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useProfile } from "@/lib/useProfile";
 import { logActivity } from "@/lib/activity";
-import { Paperclip, X } from "lucide-react";
+import { Paperclip, X, Trash2 } from "lucide-react";
 
 const IMAGE_EXT = ["jpg", "jpeg", "png", "gif", "webp"];
 function isImage(name) {
@@ -62,24 +62,29 @@ export default function BoardPage() {
     load();
   }
 
+  async function removeMessage(id) {
+    await supabase.from("messages").delete().eq("id", id);
+    load();
+  }
+
   return (
     <div>
-      <div style={{ marginBottom: 20 }}>
-        <h2 style={{ fontFamily: "var(--serif)", fontSize: 22, fontWeight: 600, margin: 0 }}>Nástěnka</h2>
-        <p style={{ margin: "4px 0 0", color: "#6b6a63", fontSize: 14 }}>Vzkazy, novinky a fotky pro celou rodinu.</p>
+      <div style={{ marginBottom: 24 }}>
+        <h2 className="page-title">Nástěnka</h2>
+        <p className="page-sub">Vzkazy, novinky a fotky pro celou rodinu.</p>
       </div>
 
-      <div className="card" style={{ marginBottom: 24 }}>
+      <div className="card" style={{ marginBottom: 28 }}>
         <textarea
           className="input"
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Napiš zprávu pro ostatní…"
-          style={{ minHeight: 60, resize: "vertical" }}
+          style={{ minHeight: 72, resize: "vertical" }}
         />
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 10, flexWrap: "wrap", gap: 8 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 12, flexWrap: "wrap", gap: 8 }}>
           <label className="btn-ghost" style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
-            <Paperclip size={14} />
+            <Paperclip size={15} />
             {file ? file.name : "Přiložit soubor"}
             <input type="file" hidden onChange={(e) => setFile(e.target.files?.[0] || null)} />
           </label>
@@ -89,13 +94,13 @@ export default function BoardPage() {
         </div>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
         {messages.map((m) => (
-          <div key={m.id} style={{ display: "flex", gap: 12 }}>
+          <div key={m.id} style={{ display: "flex", gap: 14 }}>
             <span
               style={{
-                width: 26,
-                height: 26,
+                width: 34,
+                height: 34,
                 borderRadius: "50%",
                 background: m.profiles?.color || "#999",
                 flexShrink: 0,
@@ -103,20 +108,25 @@ export default function BoardPage() {
               }}
             />
             <div style={{ flex: 1 }}>
-              <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
-                <span style={{ fontWeight: 500, fontSize: 14 }}>{m.profiles?.full_name}</span>
-                <span style={{ fontSize: 11, color: "#8a8a82" }}>{new Date(m.created_at).toLocaleString("cs-CZ")}</span>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
+                <span style={{ fontWeight: 500, fontSize: 15 }}>{m.profiles?.full_name}</span>
+                <span style={{ fontSize: 12, color: "#8a8a82" }}>{new Date(m.created_at).toLocaleString("cs-CZ")}</span>
+                {(m.user_id === profile.id || profile.role === "admin") && (
+                  <button className="icon-btn danger" style={{ padding: 2, marginLeft: "auto" }} onClick={() => removeMessage(m.id)} title="Smazat">
+                    <Trash2 size={14} />
+                  </button>
+                )}
               </div>
-              <p style={{ margin: "4px 0 0", fontSize: 14, lineHeight: 1.5 }}>{m.content}</p>
+              <p style={{ margin: "5px 0 0", fontSize: 15, lineHeight: 1.6 }}>{m.content}</p>
               {m.attachment_url && isImage(m.attachment_name) && (
                 <img
                   src={m.attachment_url}
                   alt={m.attachment_name}
                   onClick={() => setLightbox(m.attachment_url)}
                   style={{
-                    marginTop: 8,
-                    width: 160,
-                    height: 120,
+                    marginTop: 10,
+                    width: 220,
+                    height: 160,
                     objectFit: "cover",
                     borderRadius: 8,
                     border: "1px solid var(--border)",
@@ -131,19 +141,19 @@ export default function BoardPage() {
                   target="_blank"
                   rel="noreferrer"
                   style={{
-                    marginTop: 8,
+                    marginTop: 10,
                     display: "inline-flex",
                     alignItems: "center",
                     gap: 6,
-                    fontSize: 12,
+                    fontSize: 13,
                     color: "var(--moss)",
                     border: "1px solid #dfe4d8",
                     borderRadius: 6,
-                    padding: "4px 8px",
+                    padding: "5px 10px",
                     background: "#F3F5EF",
                   }}
                 >
-                  <Paperclip size={12} />
+                  <Paperclip size={13} />
                   {m.attachment_name}
                 </a>
               )}

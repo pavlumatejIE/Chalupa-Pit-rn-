@@ -48,28 +48,28 @@ export default function AdminPage() {
 
   return (
     <div>
-      <div style={{ marginBottom: 20 }}>
-        <h2 style={{ fontFamily: "var(--serif)", fontSize: 22, fontWeight: 600, margin: 0 }}>Administrace</h2>
-        <p style={{ margin: "4px 0 0", color: "#6b6a63", fontSize: 14 }}>Schvalování nových žádostí a správa uživatelů.</p>
+      <div style={{ marginBottom: 24 }}>
+        <h2 className="page-title">Administrace</h2>
+        <p className="page-sub">Schvalování nových žádostí a správa uživatelů.</p>
       </div>
 
-      {notice && <div style={{ fontSize: 13, color: "var(--moss)", marginBottom: 14 }}>{notice}</div>}
+      {notice && <div style={{ fontSize: 14, color: "var(--moss)", marginBottom: 16 }}>{notice}</div>}
 
-      <div style={{ marginBottom: 28 }}>
-        <div style={{ fontSize: 12, textTransform: "uppercase", color: "#8a8a82", marginBottom: 10 }}>Čeká na schválení</div>
-        {pending.length === 0 && <div style={{ fontSize: 13, color: "#8a8a82" }}>Žádné nové žádosti.</div>}
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      <div style={{ marginBottom: 32 }}>
+        <div style={{ fontSize: 12.5, textTransform: "uppercase", color: "#8a8a82", marginBottom: 12 }}>Čeká na schválení</div>
+        {pending.length === 0 && <div style={{ fontSize: 14, color: "#8a8a82" }}>Žádné nové žádosti.</div>}
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {pending.map((p) => (
-            <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 12, border: "1px solid var(--border)", borderRadius: 8, padding: "10px 14px" }}>
+            <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 14, border: "1px solid var(--border)", borderRadius: 8, padding: "12px 16px" }}>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 14 }}>{p.full_name}</div>
-                <div style={{ fontSize: 12, color: "#8a8a82" }}>{p.email}</div>
+                <div style={{ fontSize: 15 }}>{p.full_name}</div>
+                <div style={{ fontSize: 13, color: "#8a8a82" }}>{p.email}</div>
               </div>
               <button className="icon-btn" style={{ color: "var(--moss)" }} onClick={() => approve(p.id)} title="Schválit">
-                <Check size={18} />
+                <Check size={20} />
               </button>
-              <button className="icon-btn" style={{ color: "var(--roof)" }} onClick={() => reject(p.id)} title="Zamítnout">
-                <X size={18} />
+              <button className="icon-btn danger" onClick={() => reject(p.id)} title="Zamítnout">
+                <X size={20} />
               </button>
             </div>
           ))}
@@ -77,17 +77,17 @@ export default function AdminPage() {
       </div>
 
       <div>
-        <div style={{ fontSize: 12, textTransform: "uppercase", color: "#8a8a82", marginBottom: 10 }}>Uživatelé</div>
+        <div style={{ fontSize: 12.5, textTransform: "uppercase", color: "#8a8a82", marginBottom: 12 }}>Uživatelé</div>
         <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
           {users.map((u) => (
-            <div key={u.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 4px", borderBottom: "1px solid #ece8dd", flexWrap: "wrap" }}>
-              <span style={{ width: 24, height: 24, borderRadius: "50%", background: u.color, display: "inline-block" }} />
-              <div style={{ flex: 1, minWidth: 120, fontSize: 14 }}>{u.full_name}</div>
-              <span style={{ fontSize: 11, color: "#8a8a82" }}>{u.role === "admin" ? "administrátor" : "člen rodiny"}</span>
-              <button className="btn-ghost" style={{ fontSize: 12 }} onClick={() => toggleRole(u)}>
+            <div key={u.id} style={{ display: "flex", alignItems: "center", gap: 14, padding: "12px 4px", borderBottom: "1px solid #ece8dd", flexWrap: "wrap" }}>
+              <span style={{ width: 28, height: 28, borderRadius: "50%", background: u.color, display: "inline-block" }} />
+              <div style={{ flex: 1, minWidth: 130, fontSize: 15 }}>{u.full_name}</div>
+              <span style={{ fontSize: 12, color: "#8a8a82" }}>{u.role === "admin" ? "administrátor" : "člen rodiny"}</span>
+              <button className="btn-ghost" style={{ fontSize: 13 }} onClick={() => toggleRole(u)}>
                 {u.role === "admin" ? "Odebrat admin" : "Nastavit jako admina"}
               </button>
-              <button className="btn-ghost" style={{ fontSize: 12 }} onClick={() => resetPassword(u.email)}>
+              <button className="btn-ghost" style={{ fontSize: 13 }} onClick={() => resetPassword(u.email)}>
                 Reset hesla
               </button>
             </div>

@@ -4,6 +4,12 @@
 obrazovce), takže po nasazení hned poznáš, jestli se nová verze opravdu
 dostala na Netlify.
 
+## 1.03
+- Zvětšené a přehlednější rozhraní pro monitory a PC (kalendář, pás fotek,
+  postranní panel, karty, formuláře) – mobil zůstává kompaktní beze změny
+- Mazání: administrátor může smazat cokoli; ostatní uživatelé mažou jen
+  svoje rezervace, příspěvky na nástěnce, dokumenty, hlasování a fotky
+
 ## 1.02
 - Hlasování – návrhy, možnosti, hlasování s grafem výsledků
 - Fotky – galerie s nahráváním + pomalu rolující pás fotek vedle kalendáře

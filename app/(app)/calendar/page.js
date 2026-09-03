@@ -92,32 +92,30 @@ export default function CalendarPage() {
   return (
     <div style={{ display: "flex", gap: 28, alignItems: "flex-start" }}>
       <div style={{ flex: 1, minWidth: 0 }}>
-      <div style={{ marginBottom: 20 }}>
-        <h2 style={{ fontFamily: "var(--serif)", fontSize: 22, fontWeight: 600, margin: 0 }}>Kalendář rezervací</h2>
-        <p style={{ margin: "4px 0 0", color: "#6b6a63", fontSize: 14 }}>
-          Klikni na den a přidej svůj pobyt. Víc lidí najednou je v pořádku.
-        </p>
+      <div style={{ marginBottom: 24 }}>
+        <h2 className="page-title">Kalendář rezervací</h2>
+        <p className="page-sub">Klikni na den a přidej svůj pobyt. Víc lidí najednou je v pořádku.</p>
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
         <button className="icon-btn" onClick={() => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() - 1, 1))}>
-          <ChevronLeft size={18} />
+          <ChevronLeft size={22} />
         </button>
-        <div style={{ fontFamily: "var(--serif)", fontSize: 17, textTransform: "capitalize" }}>{monthLabel}</div>
+        <div style={{ fontFamily: "var(--serif)", fontSize: 20, textTransform: "capitalize" }}>{monthLabel}</div>
         <button className="icon-btn" onClick={() => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1))}>
-          <ChevronRight size={18} />
+          <ChevronRight size={22} />
         </button>
       </div>
 
-      <div className="calendar-grid" style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 6, marginBottom: 8 }}>
+      <div className="calendar-grid" style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", marginBottom: 10 }}>
         {weekLabels.map((w, i) => (
-          <div key={w} style={{ textAlign: "center", fontSize: 12, fontWeight: 500, color: i >= 5 ? "var(--roof)" : "#8a8a82" }}>
+          <div key={w} style={{ textAlign: "center", fontSize: 13, fontWeight: 500, color: i >= 5 ? "var(--roof)" : "#8a8a82" }}>
             {w}
           </div>
         ))}
       </div>
 
-      <div className="calendar-grid" style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 6 }}>
+      <div className="calendar-grid" style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)" }}>
         {days.map((date, idx) => {
           if (!date) return <div key={idx} />;
           const dow = (date.getDay() + 6) % 7;
@@ -139,23 +137,21 @@ export default function CalendarPage() {
                 textAlign: "left",
                 background: bg,
                 border: isToday ? "1.5px solid var(--roof)" : "1px solid #e4e0d5",
-                borderRadius: 6,
-                minHeight: 74,
-                padding: 6,
+                borderRadius: 8,
                 cursor: "pointer",
                 display: "flex",
                 flexDirection: "column",
-                gap: 4,
+                gap: 5,
               }}
             >
-              <span style={{ fontSize: 13, fontWeight: isToday ? 600 : 400 }}>{date.getDate()}</span>
-              {holidayName && <span style={{ fontSize: 10, color: "#9a6a26", lineHeight: 1.2 }}>{holidayName}</span>}
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 3 }}>
+              <span style={{ fontSize: 16, fontWeight: isToday ? 600 : 400 }}>{date.getDate()}</span>
+              {holidayName && <span style={{ fontSize: 11.5, color: "#9a6a26", lineHeight: 1.25 }}>{holidayName}</span>}
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
                 {dayRes.map((r) => {
                   const u = profiles[r.user_id];
                   if (!u) return null;
                   return (
-                    <span key={r.id} style={{ fontSize: 10, padding: "1px 5px", borderRadius: 10, background: u.color, color: "#fff" }}>
+                    <span key={r.id} style={{ fontSize: 11.5, padding: "2px 7px", borderRadius: 10, background: u.color, color: "#fff" }}>
                       {u.full_name.split(" ")[0]}
                     </span>
                   );
@@ -166,21 +162,21 @@ export default function CalendarPage() {
         })}
       </div>
 
-      <div style={{ display: "flex", gap: 16, marginTop: 16, fontSize: 12, color: "#6b6a63" }}>
-        <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <span style={{ width: 12, height: 12, background: "#EEF1E9", border: "1px solid #e4e0d5", borderRadius: 3 }} /> víkend
+      <div style={{ display: "flex", gap: 20, marginTop: 18, fontSize: 13, color: "#6b6a63" }}>
+        <span style={{ display: "flex", alignItems: "center", gap: 7 }}>
+          <span style={{ width: 13, height: 13, background: "#EEF1E9", border: "1px solid #e4e0d5", borderRadius: 3 }} /> víkend
         </span>
-        <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <span style={{ width: 12, height: 12, background: "#F6E9D8", border: "1px solid #e4e0d5", borderRadius: 3 }} /> státní svátek
+        <span style={{ display: "flex", alignItems: "center", gap: 7 }}>
+          <span style={{ width: 13, height: 13, background: "#F6E9D8", border: "1px solid #e4e0d5", borderRadius: 3 }} /> státní svátek
         </span>
       </div>
 
-      <div style={{ marginTop: 32 }}>
-        <div style={{ fontSize: 12, textTransform: "uppercase", color: "#8a8a82", marginBottom: 10 }}>Poslední události</div>
-        {activity.length === 0 && <div style={{ fontSize: 13, color: "#8a8a82" }}>Zatím žádná aktivita.</div>}
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      <div style={{ marginTop: 36 }}>
+        <div style={{ fontSize: 12.5, textTransform: "uppercase", color: "#8a8a82", marginBottom: 12 }}>Poslední události</div>
+        {activity.length === 0 && <div style={{ fontSize: 14, color: "#8a8a82" }}>Zatím žádná aktivita.</div>}
+        <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
           {activity.map((a) => (
-            <div key={a.id} style={{ fontSize: 13, lineHeight: 1.5, borderBottom: "1px solid #ece8dd", paddingBottom: 8 }}>
+            <div key={a.id} style={{ fontSize: 14, lineHeight: 1.5, borderBottom: "1px solid #ece8dd", paddingBottom: 9 }}>
               <span style={{ color: "#8a8a82" }}>{fmtActivityDate(a.created_at)}</span>{" "}
               <span style={{ fontWeight: 500 }}>{a.profiles?.full_name || "Neznámý uživatel"}</span>{" "}
               <span>{a.description}</span>
@@ -193,6 +189,7 @@ export default function CalendarPage() {
         <ReservationModal
           date={modalDate}
           currentUserId={profile.id}
+          isAdmin={profile.role === "admin"}
           existing={reservationsFor(modalDate).map((r) => ({ ...r, user: profiles[r.user_id] }))}
           onClose={() => setModalDate(null)}
           onSave={addReservation}
@@ -206,7 +203,7 @@ export default function CalendarPage() {
   );
 }
 
-function ReservationModal({ date, currentUserId, existing, onClose, onSave, onDelete }) {
+function ReservationModal({ date, currentUserId, isAdmin, existing, onClose, onSave, onDelete }) {
   const [from, setFrom] = useState(fmtDate(date));
   const [to, setTo] = useState(fmtDate(date));
   const [hourFrom, setHourFrom] = useState("");
@@ -221,7 +218,7 @@ function ReservationModal({ date, currentUserId, existing, onClose, onSave, onDe
     >
       <div
         className="modal-box"
-        style={{ background: "#fff", borderRadius: 10, padding: 22, width: 380, maxHeight: "85vh", overflowY: "auto", border: "1px solid var(--border)" }}
+        style={{ background: "#fff", borderRadius: 10, padding: 26, width: 440, maxHeight: "85vh", overflowY: "auto", border: "1px solid var(--border)" }}
         onClick={(e) => e.stopPropagation()}
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
@@ -248,8 +245,8 @@ function ReservationModal({ date, currentUserId, existing, onClose, onSave, onDe
                       {r.note && ` · ${r.note}`}
                     </div>
                   </div>
-                  {r.user_id === currentUserId && (
-                    <button className="icon-btn" onClick={() => onDelete(r.id)}>
+                  {(r.user_id === currentUserId || isAdmin) && (
+                    <button className="icon-btn danger" onClick={() => onDelete(r.id)} title="Smazat">
                       <Trash2 size={14} />
                     </button>
                   )}

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useProfile } from "@/lib/useProfile";
 import { logActivity } from "@/lib/activity";
-import { FileText, Plus, X, Tag } from "lucide-react";
+import { FileText, Plus, X, Tag, Trash2 } from "lucide-react";
 
 export default function DocumentsPage() {
   const { profile } = useProfile();
@@ -69,43 +69,46 @@ export default function DocumentsPage() {
     load();
   }
 
+  async function removeDocument(id, e) {
+    e.preventDefault();
+    e.stopPropagation();
+    await supabase.from("documents").delete().eq("id", id);
+    load();
+  }
+
   return (
     <div>
-      <div style={{ marginBottom: 20 }}>
-        <h2 style={{ fontFamily: "var(--serif)", fontSize: 22, fontWeight: 600, margin: 0 }}>Dokumenty</h2>
-        <p style={{ margin: "4px 0 0", color: "#6b6a63", fontSize: 14 }}>Sdílené dokumenty k chalupě – revize, smlouvy, návody.</p>
+      <div style={{ marginBottom: 24 }}>
+        <h2 className="page-title">Dokumenty</h2>
+        <p className="page-sub">Sdílené dokumenty k chalupě – revize, smlouvy, návody.</p>
       </div>
 
-      <div style={{ display: "flex", gap: 10, marginBottom: 20, flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: 10, marginBottom: 24, flexWrap: "wrap" }}>
         <button className="btn-primary" style={{ display: "flex", alignItems: "center", gap: 6 }} onClick={() => setShowForm(true)}>
-          <Plus size={16} /> Nahrát dokument
+          <Plus size={17} /> Nahrát dokument
         </button>
         <button className="btn-ghost" style={{ display: "flex", alignItems: "center", gap: 6 }} onClick={() => setShowCategoryForm(true)}>
-          <Tag size={16} /> Přidat kategorii
+          <Tag size={17} /> Přidat kategorii
         </button>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
         {documents.map((d) => (
-          <a
-            key={d.id}
-            href={d.file_url}
-            target="_blank"
-            rel="noreferrer"
-            style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 4px", borderBottom: "1px solid #ece8dd", textDecoration: "none", color: "inherit" }}
-          >
-            <FileText size={18} color="var(--roof)" />
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 14, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.title}</div>
-              <div style={{ fontSize: 11, color: "#8a8a82" }}>
-                nahrál/a {d.profiles?.full_name}
-                {d.document_categories?.name && ` · ${d.document_categories.name}`}
+          <div key={d.id} style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 4px", borderBottom: "1px solid #ece8dd" }}>
+            <a href={d.file_url} target="_blank" rel="noreferrer" style={{ display: "flex", alignItems: "center", gap: 14, flex: 1, minWidth: 0, textDecoration: "none", color: "inherit" }}>
+              <FileText size={20} color="var(--roof)" />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 15, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.title}</div>
+                <div style={{ fontSize: 12, color: "#8a8a82" }}>
+                  nahrál/a {d.profiles?.full_name}
+                  {d.document_categories?.name && ` · ${d.document_categories.name}`}
+                </div>
               </div>
-            </div>
+            </a>
             <span
               style={{
-                fontSize: 11,
-                padding: "3px 8px",
+                fontSize: 12,
+                padding: "4px 10px",
                 borderRadius: 10,
                 background: d.visible_to === "all" ? "#F3F5EF" : "#F6E9D8",
                 color: d.visible_to === "all" ? "var(--moss)" : "#9a6a26",
@@ -114,7 +117,12 @@ export default function DocumentsPage() {
             >
               {d.visible_to === "all" ? "Pro všechny" : "Jen admini"}
             </span>
-          </a>
+            {(d.uploaded_by === profile.id || profile.role === "admin") && (
+              <button className="icon-btn danger" onClick={(e) => removeDocument(d.id, e)} title="Smazat">
+                <Trash2 size={16} />
+              </button>
+            )}
+          </div>
         ))}
       </div>
 
@@ -123,7 +131,7 @@ export default function DocumentsPage() {
           style={{ position: "fixed", inset: 0, background: "rgba(43,42,38,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 50 }}
           onClick={() => setShowForm(false)}
         >
-          <div className="modal-box" style={{ background: "#fff", borderRadius: 10, padding: 22, width: 380 }} onClick={(e) => e.stopPropagation()}>
+          <div className="modal-box" style={{ background: "#fff", borderRadius: 10, padding: 26, width: 440 }} onClick={(e) => e.stopPropagation()}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
               <div style={{ fontFamily: "var(--serif)", fontSize: 16 }}>Nahrát dokument</div>
               <button className="icon-btn" onClick={() => setShowForm(false)}>
@@ -175,7 +183,7 @@ export default function DocumentsPage() {
           style={{ position: "fixed", inset: 0, background: "rgba(43,42,38,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 50 }}
           onClick={() => setShowCategoryForm(false)}
         >
-          <div className="modal-box" style={{ background: "#fff", borderRadius: 10, padding: 22, width: 340 }} onClick={(e) => e.stopPropagation()}>
+          <div className="modal-box" style={{ background: "#fff", borderRadius: 10, padding: 26, width: 380 }} onClick={(e) => e.stopPropagation()}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
               <div style={{ fontFamily: "var(--serif)", fontSize: 16 }}>Přidat kategorii</div>
               <button className="icon-btn" onClick={() => setShowCategoryForm(false)}>

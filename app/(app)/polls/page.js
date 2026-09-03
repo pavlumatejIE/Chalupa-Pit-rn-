@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useProfile } from "@/lib/useProfile";
 import { logActivity } from "@/lib/activity";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Trash2 } from "lucide-react";
 
 export default function PollsPage() {
   const { profile } = useProfile();
@@ -70,33 +70,46 @@ export default function PollsPage() {
     load();
   }
 
+  async function removePoll(id) {
+    await supabase.from("polls").delete().eq("id", id);
+    load();
+  }
+
   return (
     <div>
-      <div style={{ marginBottom: 20 }}>
-        <h2 style={{ fontFamily: "var(--serif)", fontSize: 22, fontWeight: 600, margin: 0 }}>Hlasování</h2>
-        <p style={{ margin: "4px 0 0", color: "#6b6a63", fontSize: 14 }}>Navrhni téma a nech ostatní hlasovat.</p>
+      <div style={{ marginBottom: 24 }}>
+        <h2 className="page-title">Hlasování</h2>
+        <p className="page-sub">Navrhni téma a nech ostatní hlasovat.</p>
       </div>
 
-      <button className="btn-primary" style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 24 }} onClick={() => setShowForm(true)}>
-        <Plus size={16} /> Nové hlasování
+      <button className="btn-primary" style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 28 }} onClick={() => setShowForm(true)}>
+        <Plus size={17} /> Nové hlasování
       </button>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
-        {polls.length === 0 && <div style={{ fontSize: 13, color: "#8a8a82" }}>Zatím žádná hlasování.</div>}
+      <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+        {polls.length === 0 && <div style={{ fontSize: 14, color: "#8a8a82" }}>Zatím žádná hlasování.</div>}
         {polls.map((poll) => {
           const pollOptions = options.filter((o) => o.poll_id === poll.id);
           const pollVotes = votes.filter((v) => v.poll_id === poll.id);
           const total = pollVotes.length;
           const myVote = pollVotes.find((v) => v.user_id === profile.id)?.option_id;
+          const canDelete = poll.created_by === profile.id || profile.role === "admin";
 
           return (
             <div key={poll.id} className="card">
-              <div style={{ fontSize: 15, fontWeight: 500, marginBottom: 4 }}>{poll.question}</div>
-              <div style={{ fontSize: 11, color: "#8a8a82", marginBottom: 14 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10 }}>
+                <div style={{ fontSize: 16, fontWeight: 500, marginBottom: 4 }}>{poll.question}</div>
+                {canDelete && (
+                  <button className="icon-btn danger" onClick={() => removePoll(poll.id)} title="Smazat hlasování">
+                    <Trash2 size={16} />
+                  </button>
+                )}
+              </div>
+              <div style={{ fontSize: 12, color: "#8a8a82", marginBottom: 16 }}>
                 navrhl/a {poll.profiles?.full_name} · {total} {total === 1 ? "hlas" : total >= 2 && total <= 4 ? "hlasy" : "hlasů"}
               </div>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {pollOptions.map((opt) => {
                   const count = pollVotes.filter((v) => v.option_id === opt.id).length;
                   const pct = total > 0 ? Math.round((count / total) * 100) : 0;
@@ -107,7 +120,7 @@ export default function PollsPage() {
                       onClick={() => vote(poll.id, opt.id)}
                       style={{
                         border: isMine ? "1.5px solid var(--roof)" : "1px solid var(--border)",
-                        borderRadius: 6,
+                        borderRadius: 7,
                         padding: 0,
                         background: "#fff",
                         cursor: "pointer",
@@ -125,7 +138,7 @@ export default function PollsPage() {
                           transition: "width 0.3s",
                         }}
                       />
-                      <div style={{ position: "relative", display: "flex", justifyContent: "space-between", padding: "8px 12px", fontSize: 13 }}>
+                      <div style={{ position: "relative", display: "flex", justifyContent: "space-between", padding: "11px 16px", fontSize: 14.5 }}>
                         <span>{opt.text}</span>
                         <span style={{ color: "#6b6a63", flexShrink: 0, marginLeft: 10 }}>
                           {count} · {pct}%
@@ -145,7 +158,7 @@ export default function PollsPage() {
           style={{ position: "fixed", inset: 0, background: "rgba(43,42,38,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 50 }}
           onClick={() => setShowForm(false)}
         >
-          <div className="modal-box" style={{ background: "#fff", borderRadius: 10, padding: 22, width: 400, maxHeight: "85vh", overflowY: "auto" }} onClick={(e) => e.stopPropagation()}>
+          <div className="modal-box" style={{ background: "#fff", borderRadius: 10, padding: 26, width: 460, maxHeight: "85vh", overflowY: "auto" }} onClick={(e) => e.stopPropagation()}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
               <div style={{ fontFamily: "var(--serif)", fontSize: 16 }}>Nové hlasování</div>
               <button className="icon-btn" onClick={() => setShowForm(false)}>

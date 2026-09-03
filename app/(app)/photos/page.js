@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useProfile } from "@/lib/useProfile";
 import { logActivity } from "@/lib/activity";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Trash2 } from "lucide-react";
 
 export default function PhotosPage() {
   const { profile } = useProfile();
@@ -36,28 +36,34 @@ export default function PhotosPage() {
     load();
   }
 
+  async function removePhoto(photo) {
+    await supabase.from("photos").delete().eq("id", photo.id);
+    setLightbox(null);
+    load();
+  }
+
   return (
     <div>
-      <div style={{ marginBottom: 20 }}>
-        <h2 style={{ fontFamily: "var(--serif)", fontSize: 22, fontWeight: 600, margin: 0 }}>Fotky</h2>
-        <p style={{ margin: "4px 0 0", color: "#6b6a63", fontSize: 14 }}>Společná galerie ze všech pobytů na chalupě.</p>
+      <div style={{ marginBottom: 24 }}>
+        <h2 className="page-title">Fotky</h2>
+        <p className="page-sub">Společná galerie ze všech pobytů na chalupě.</p>
       </div>
 
-      <label className="btn-primary" style={{ display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 20, cursor: "pointer" }}>
-        <Plus size={16} /> {uploading ? "Nahrávám…" : "Nahrát fotku"}
+      <label className="btn-primary" style={{ display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 24, cursor: "pointer" }}>
+        <Plus size={17} /> {uploading ? "Nahrávám…" : "Nahrát fotku"}
         <input type="file" accept="image/*" hidden onChange={onFileChosen} disabled={uploading} />
       </label>
 
-      {photos.length === 0 && <div style={{ fontSize: 13, color: "#8a8a82" }}>Zatím žádné fotky.</div>}
+      {photos.length === 0 && <div style={{ fontSize: 14, color: "#8a8a82" }}>Zatím žádné fotky.</div>}
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 8 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 14 }}>
         {photos.map((p) => (
           <img
             key={p.id}
             src={p.url}
             alt=""
             onClick={() => setLightbox(p)}
-            style={{ width: "100%", height: 140, objectFit: "cover", borderRadius: 8, border: "1px solid var(--border)", cursor: "pointer" }}
+            style={{ width: "100%", height: 200, objectFit: "cover", borderRadius: 10, border: "1px solid var(--border)", cursor: "pointer" }}
           />
         ))}
       </div>
@@ -70,8 +76,21 @@ export default function PhotosPage() {
           <button className="icon-btn" style={{ position: "absolute", top: 20, right: 20, color: "#fff" }} onClick={() => setLightbox(null)}>
             <X size={26} />
           </button>
+          {(lightbox.uploaded_by === profile.id || profile.role === "admin") && (
+            <button
+              className="icon-btn"
+              style={{ position: "absolute", top: 20, right: 64, color: "#fff" }}
+              onClick={(e) => {
+                e.stopPropagation();
+                removePhoto(lightbox);
+              }}
+              title="Smazat fotku"
+            >
+              <Trash2 size={22} />
+            </button>
+          )}
           <img src={lightbox.url} alt="" style={{ maxWidth: "90vw", maxHeight: "82vh", borderRadius: 8 }} onClick={(e) => e.stopPropagation()} />
-          <div style={{ color: "#fff", fontSize: 12, marginTop: 10 }}>nahrál/a {lightbox.profiles?.full_name}</div>
+          <div style={{ color: "#fff", fontSize: 13, marginTop: 12 }}>nahrál/a {lightbox.profiles?.full_name}</div>
         </div>
       )}
     </div>
