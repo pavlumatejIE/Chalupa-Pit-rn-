@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useCurrentProfile } from "@/lib/ProfileContext";
+import { useNotifications } from "@/lib/NotificationsContext";
 import { logActivity } from "@/lib/activity";
 import { uploadContentType } from "@/lib/uploadHelpers";
 import { Paperclip, X, Trash2 } from "lucide-react";
@@ -15,6 +16,10 @@ function isImage(name) {
 
 export default function BoardPage() {
   const profile = useCurrentProfile();
+  const { markSeen } = useNotifications();
+  useEffect(() => {
+    markSeen("board");
+  }, [markSeen]);
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
   const [file, setFile] = useState(null);

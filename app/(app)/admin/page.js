@@ -2,11 +2,16 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useCurrentProfile } from "@/lib/ProfileContext";
+import { useNotifications } from "@/lib/NotificationsContext";
 import { adminSetPassword, adminDeleteUser } from "@/lib/adminActions";
 import { Check, X, KeyRound, Trash2 } from "lucide-react";
 
 export default function AdminPage() {
   const profile = useCurrentProfile();
+  const { markSeen } = useNotifications();
+  useEffect(() => {
+    markSeen("admin");
+  }, [markSeen]);
   const [pending, setPending] = useState([]);
   const [users, setUsers] = useState([]);
   const [notice, setNotice] = useState("");

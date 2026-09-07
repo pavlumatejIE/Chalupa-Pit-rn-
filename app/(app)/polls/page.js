@@ -2,11 +2,16 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useCurrentProfile } from "@/lib/ProfileContext";
+import { useNotifications } from "@/lib/NotificationsContext";
 import { logActivity } from "@/lib/activity";
 import { Plus, X, Trash2 } from "lucide-react";
 
 export default function PollsPage() {
   const profile = useCurrentProfile();
+  const { markSeen } = useNotifications();
+  useEffect(() => {
+    markSeen("polls");
+  }, [markSeen]);
   const [polls, setPolls] = useState([]);
   const [options, setOptions] = useState([]);
   const [votes, setVotes] = useState([]);

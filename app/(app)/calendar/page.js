@@ -4,6 +4,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { useCurrentProfile } from "@/lib/ProfileContext";
 import { czechHolidays, fmtDate } from "@/lib/holidays";
 import { logActivity } from "@/lib/activity";
+import { useNotifications } from "@/lib/NotificationsContext";
 import PhotoStrip from "@/components/PhotoStrip";
 import { ChevronLeft, ChevronRight, X, Trash2 } from "lucide-react";
 
@@ -18,6 +19,10 @@ const today = new Date();
 
 export default function CalendarPage() {
   const profile = useCurrentProfile();
+  const { markSeen } = useNotifications();
+  useEffect(() => {
+    markSeen("calendar");
+  }, [markSeen]);
   const [cursor, setCursor] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
   const [reservations, setReservations] = useState([]);
   const [profiles, setProfiles] = useState({});

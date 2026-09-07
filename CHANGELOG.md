@@ -4,6 +4,14 @@
 obrazovce), takže po nasazení hned poznáš, jestli se nová verze opravdu
 dostala na Netlify.
 
+## 1.15
+- Nová upozornění na novinky – u položek v menu (Kalendář, Nástěnka,
+  Dokumenty, Co je potřeba, Hlasování, Fotky, u admina i Administrace)
+  se objeví červené kolečko s počtem nových věcí, které jsi ještě
+  neviděl. Zmizí, jakmile na danou sekci klikneš. Počítá se jen to, co
+  přidal někdo jiný – na vlastní přidání appka neupozorňuje
+- Vyžaduje novou SQL migraci migration_7_read_marks.sql
+
 ## 1.14
 - Oprava vážné chyby: appka mohla občas spadnout s hláškou "client-side
   exception" hned po otevření stránky. Příčina: každá stránka si sama

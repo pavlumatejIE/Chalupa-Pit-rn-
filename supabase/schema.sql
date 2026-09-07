@@ -263,6 +263,32 @@ create policy "tasks_insert" on public.tasks for insert with check (auth.uid() =
 create policy "tasks_update" on public.tasks for update using (auth.uid() = zadal or auth.uid() = prirazeno or public.is_admin());
 create policy "tasks_delete" on public.tasks for delete using (auth.uid() = zadal or public.is_admin());
 
+-- ---------- LAST SEEN (odznaky s poctem novinek) ----------
+create table public.last_seen (
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  section text not null,
+  seen_at timestamptz not null default now(),
+  primary key (user_id, section)
+);
+
+alter table public.last_seen enable row level security;
+create policy "last_seen_select_own" on public.last_seen for select using (auth.uid() = user_id);
+create policy "last_seen_insert_own" on public.last_seen for insert with check (auth.uid() = user_id);
+create policy "last_seen_update_own" on public.last_seen for update using (auth.uid() = user_id);
+
+-- ---------- UPOZORNĚNÍ NA NOVINKY (červené kolečko v menu) ----------
+create table public.last_seen (
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  section text not null,
+  seen_at timestamptz not null default now(),
+  primary key (user_id, section)
+);
+
+alter table public.last_seen enable row level security;
+create policy "last_seen_select" on public.last_seen for select using (auth.uid() = user_id);
+create policy "last_seen_insert" on public.last_seen for insert with check (auth.uid() = user_id);
+create policy "last_seen_update" on public.last_seen for update using (auth.uid() = user_id);
+
 -- ============================================================
 -- STORAGE (soubory a fotky)
 -- ============================================================

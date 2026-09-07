@@ -140,6 +140,34 @@ a {
   background: #f8f6f0;
 }
 
+.nav-badge {
+  margin-left: auto;
+  background: var(--roof);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 4px 7px;
+  border-radius: 999px;
+  min-width: 18px;
+  text-align: center;
+}
+
+.bottom-nav-badge {
+  position: absolute;
+  top: -6px;
+  right: -9px;
+  background: var(--roof);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 2px 5px;
+  border-radius: 999px;
+  min-width: 15px;
+  text-align: center;
+}
+
 .content {
   flex: 1;
   padding: 44px 56px;

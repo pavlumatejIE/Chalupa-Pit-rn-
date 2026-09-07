@@ -2,12 +2,17 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useCurrentProfile } from "@/lib/ProfileContext";
+import { useNotifications } from "@/lib/NotificationsContext";
 import { logActivity } from "@/lib/activity";
 import { uploadContentType } from "@/lib/uploadHelpers";
 import { FileText, Plus, X, Tag, Trash2 } from "lucide-react";
 
 export default function DocumentsPage() {
   const profile = useCurrentProfile();
+  const { markSeen } = useNotifications();
+  useEffect(() => {
+    markSeen("documents");
+  }, [markSeen]);
   const [documents, setDocuments] = useState([]);
   const [categories, setCategories] = useState([]);
   const [showForm, setShowForm] = useState(false);

@@ -3,6 +3,7 @@ import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
 import { APP_VERSION } from "@/lib/version";
+import { useNotifications } from "@/lib/NotificationsContext";
 import {
   Calendar as CalendarIcon,
   MessageSquare,
@@ -17,19 +18,30 @@ import {
 } from "lucide-react";
 
 const TABS = [
-  { href: "/calendar", label: "Kalendář", icon: CalendarIcon },
-  { href: "/board", label: "Nástěnka", icon: MessageSquare },
-  { href: "/documents", label: "Dokumenty", icon: FileText },
-  { href: "/tasks", label: "Co je potřeba", icon: ListChecks },
-  { href: "/polls", label: "Hlasování", icon: BarChart3 },
-  { href: "/photos", label: "Fotky", icon: ImageIcon },
+  { href: "/calendar", label: "Kalendář", icon: CalendarIcon, badgeKey: "calendar" },
+  { href: "/board", label: "Nástěnka", icon: MessageSquare, badgeKey: "board" },
+  { href: "/documents", label: "Dokumenty", icon: FileText, badgeKey: "documents" },
+  { href: "/tasks", label: "Co je potřeba", icon: ListChecks, badgeKey: "tasks" },
+  { href: "/polls", label: "Hlasování", icon: BarChart3, badgeKey: "polls" },
+  { href: "/photos", label: "Fotky", icon: ImageIcon, badgeKey: "photos" },
   { href: "/payments", label: "Platby", icon: CreditCard },
 ];
+
+function Badge({ count }) {
+  if (!count) return null;
+  return <span className="nav-badge">{count > 99 ? "99+" : count}</span>;
+}
+
+function BottomBadge({ count }) {
+  if (!count) return null;
+  return <span className="bottom-nav-badge">{count > 9 ? "9+" : count}</span>;
+}
 
 export default function AppShell({ profile, children }) {
   const pathname = usePathname();
   const router = useRouter();
-  const tabs = profile?.role === "admin" ? [...TABS, { href: "/admin", label: "Admin", icon: ShieldCheck }] : TABS;
+  const { counts } = useNotifications();
+  const tabs = profile?.role === "admin" ? [...TABS, { href: "/admin", label: "Admin", icon: ShieldCheck, badgeKey: "admin" }] : TABS;
 
   async function signOut() {
     await supabase.auth.signOut();
@@ -55,6 +67,7 @@ export default function AppShell({ profile, children }) {
             <Link key={t.href} href={t.href} className={`nav-item ${pathname === t.href ? "active" : ""}`}>
               <t.icon size={18} />
               {t.label}
+              {t.badgeKey && <Badge count={counts[t.badgeKey]} />}
             </Link>
           ))}
         </div>
@@ -76,7 +89,10 @@ export default function AppShell({ profile, children }) {
       <div className="bottom-nav">
         {tabs.map((t) => (
           <Link key={t.href} href={t.href} className={`bottom-nav-item ${pathname === t.href ? "active" : ""}`}>
-            <t.icon size={20} />
+            <span style={{ position: "relative", display: "inline-flex" }}>
+              <t.icon size={20} />
+              {t.badgeKey && <BottomBadge count={counts[t.badgeKey]} />}
+            </span>
             {t.label}
           </Link>
         ))}
