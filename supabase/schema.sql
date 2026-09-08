@@ -16,15 +16,21 @@ create table public.profiles (
   created_at timestamptz not null default now()
 );
 
--- automaticky založí profil (status "pending") při registraci
+-- automaticky založí profil (status "pending") při registraci,
+-- s náhodnou barvou z palety a jménem z e-mailu, pokud není zadané
 create or replace function public.handle_new_user()
 returns trigger as $$
+declare
+  palette text[] := array['#A8442D','#4B5D3A','#8F6B2E','#5E6E8F','#6B4A34','#7C4B6B','#2E7D6B','#B5651D'];
+  chosen_color text;
 begin
-  insert into public.profiles (id, full_name, email)
+  chosen_color := palette[1 + floor(random() * array_length(palette, 1))::int];
+  insert into public.profiles (id, full_name, email, color)
   values (
     new.id,
-    coalesce(new.raw_user_meta_data->>'full_name', new.email),
-    new.email
+    coalesce(nullif(trim(new.raw_user_meta_data->>'full_name'), ''), split_part(new.email, '@', 1)),
+    new.email,
+    chosen_color
   );
   return new;
 end;

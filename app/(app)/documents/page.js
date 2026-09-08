@@ -25,6 +25,7 @@ export default function DocumentsPage() {
   const [visibility, setVisibility] = useState("all");
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
   const [filterYear, setFilterYear] = useState(null);
   const [filterCategoryId, setFilterCategoryId] = useState(null);
 
@@ -80,21 +81,30 @@ export default function DocumentsPage() {
   async function upload() {
     if (!title.trim() || !file) return;
     setUploading(true);
+    setUploadError("");
     const path = `${profile.id}/${Date.now()}-${file.name}`;
     const { error: upErr } = await supabase.storage.from("documents").upload(path, file, {
       contentType: uploadContentType(file),
     });
-    if (!upErr) {
-      const { data } = supabase.storage.from("documents").getPublicUrl(path);
-      await supabase.from("documents").insert({
-        uploaded_by: profile.id,
-        title,
-        file_url: data.publicUrl,
-        visible_to: visibility,
-        category_id: categoryId || null,
-      });
-      await logActivity(profile.id, `nahrál/a nový dokument – ${title}`);
+    if (upErr) {
+      setUploadError("Nahrání souboru se nezdařilo: " + upErr.message);
+      setUploading(false);
+      return;
     }
+    const { data } = supabase.storage.from("documents").getPublicUrl(path);
+    const { error: insertErr } = await supabase.from("documents").insert({
+      uploaded_by: profile.id,
+      title,
+      file_url: data.publicUrl,
+      visible_to: visibility,
+      category_id: categoryId || null,
+    });
+    if (insertErr) {
+      setUploadError("Dokument se nepodařilo uložit: " + insertErr.message);
+      setUploading(false);
+      return;
+    }
+    await logActivity(profile.id, `nahrál/a nový dokument – ${title}`);
     setTitle("");
     setFile(null);
     setVisibility("all");
@@ -146,7 +156,7 @@ export default function DocumentsPage() {
       </div>
 
       <div style={{ display: "flex", gap: 10, marginBottom: 24, flexWrap: "wrap" }}>
-        <button className="btn-primary" style={{ display: "flex", alignItems: "center", gap: 6 }} onClick={() => setShowForm(true)}>
+        <button className="btn-primary" style={{ display: "flex", alignItems: "center", gap: 6 }} onClick={() => { setUploadError(""); setShowForm(true); }}>
           <Plus size={17} /> Nahrát dokument
         </button>
         <button className="btn-ghost" style={{ display: "flex", alignItems: "center", gap: 6 }} onClick={() => { setCategoryError(""); setShowCategoryForm(true); }}>
@@ -322,6 +332,7 @@ export default function DocumentsPage() {
                 </select>
               </label>
             </div>
+            {uploadError && <div style={{ fontSize: 13, color: "var(--roof)", marginTop: 10 }}>{uploadError}</div>}
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 20 }}>
               <button className="btn-ghost" onClick={() => setShowForm(false)}>
                 Zrušit

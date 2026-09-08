@@ -24,6 +24,7 @@ export default function BoardPage() {
   const [text, setText] = useState("");
   const [file, setFile] = useState(null);
   const [sending, setSending] = useState(false);
+  const [postError, setPostError] = useState("");
   const [lightbox, setLightbox] = useState(null);
 
   async function load() {
@@ -41,6 +42,7 @@ export default function BoardPage() {
   async function post() {
     if (!text.trim()) return;
     setSending(true);
+    setPostError("");
     let attachment_url = null;
     let attachment_name = null;
 
@@ -49,19 +51,27 @@ export default function BoardPage() {
       const { error: upErr } = await supabase.storage.from("attachments").upload(path, file, {
         contentType: uploadContentType(file),
       });
-      if (!upErr) {
-        const { data } = supabase.storage.from("attachments").getPublicUrl(path);
-        attachment_url = data.publicUrl;
-        attachment_name = file.name;
+      if (upErr) {
+        setPostError("Přílohu se nepodařilo nahrát: " + upErr.message);
+        setSending(false);
+        return;
       }
+      const { data } = supabase.storage.from("attachments").getPublicUrl(path);
+      attachment_url = data.publicUrl;
+      attachment_name = file.name;
     }
 
-    await supabase.from("messages").insert({
+    const { error: insertErr } = await supabase.from("messages").insert({
       user_id: profile.id,
       content: text,
       attachment_url,
       attachment_name,
     });
+    if (insertErr) {
+      setPostError("Zprávu se nepodařilo odeslat: " + insertErr.message);
+      setSending(false);
+      return;
+    }
     await logActivity(profile.id, "přidal/a příspěvek na nástěnku");
 
     setText("");
@@ -100,6 +110,7 @@ export default function BoardPage() {
             {sending ? "Odesílám…" : "Odeslat"}
           </button>
         </div>
+        {postError && <div style={{ fontSize: 13, color: "var(--roof)", marginTop: 10 }}>{postError}</div>}
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>

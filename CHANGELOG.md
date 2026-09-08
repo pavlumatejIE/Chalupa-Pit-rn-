@@ -4,6 +4,20 @@
 obrazovce), takže po nasazení hned poznáš, jestli se nová verze opravdu
 dostala na Netlify.
 
+## 1.16
+- Oprava vážné chyby: pokud se nahrání souboru z nějakého důvodu nepovedlo
+  (velký soubor, výpadek připojení…), appka to potichu ignorovala – zpráva
+  na nástěnce se odeslala bez přílohy a dokument se vůbec neuložil, bez
+  jakékoli hlášky. Teď appka jasně řekne, co se pokazilo, a nic
+  neodešle napůl
+- Noví uživatelé dostanou náhodnou barvu z palety místo toho, aby byli
+  všichni stejně tmavě zelení; stávajícím uživatelům to spraví migrace
+  (rozdělí jim barvy podle pořadí registrace)
+- Když mají dva lidé stejné křestní jméno, appka v kalendáři zobrazí
+  celé jméno místo jen křestního, aby šlo poznat, o koho jde
+- Jméno při registraci je teď nepovinné – kdo ho nevyplní, appka mu
+  jako jméno použije část e-mailu před zavináčem
+
 ## 1.15
 - Nová upozornění na novinky – u položek v menu (Kalendář, Nástěnka,
   Dokumenty, Co je potřeba, Hlasování, Fotky, u admina i Administrace)

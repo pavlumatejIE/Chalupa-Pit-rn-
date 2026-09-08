@@ -4,6 +4,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { useCurrentProfile } from "@/lib/ProfileContext";
 import { czechHolidays, fmtDate } from "@/lib/holidays";
 import { logActivity } from "@/lib/activity";
+import { shortDisplayName } from "@/lib/names";
 import { useNotifications } from "@/lib/NotificationsContext";
 import PhotoStrip from "@/components/PhotoStrip";
 import { ChevronLeft, ChevronRight, X, Trash2 } from "lucide-react";
@@ -156,12 +157,8 @@ export default function CalendarPage() {
                   const u = profiles[r.user_id];
                   if (!u) return null;
                   return (
-                    <span
-                      key={r.id}
-                      title={r.note || ""}
-                      style={{ fontSize: 11.5, padding: "2px 7px", borderRadius: 10, background: u.color, color: "#fff" }}
-                    >
-                      {u.full_name.split(" ")[0]}
+                    <span key={r.id} title={r.note || ""} style={{ fontSize: 11.5, padding: "2px 7px", borderRadius: 10, background: u.color, color: "#fff" }}>
+                      {shortDisplayName(u, Object.values(profiles))}
                     </span>
                   );
                 })}

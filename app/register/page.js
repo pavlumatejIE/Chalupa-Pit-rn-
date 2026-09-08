@@ -53,8 +53,8 @@ export default function RegisterPage() {
 
         <form onSubmit={onSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           <label style={{ fontSize: 12, color: "#6b6a63" }}>
-            Celé jméno
-            <input className="input" required value={fullName} onChange={(e) => setFullName(e.target.value)} style={{ marginTop: 5 }} />
+            Celé jméno (nepovinné)
+            <input className="input" value={fullName} onChange={(e) => setFullName(e.target.value)} style={{ marginTop: 5 }} placeholder="necháš-li prázdné, použije se e-mail" />
           </label>
           <label style={{ fontSize: 12, color: "#6b6a63" }}>
             E-mail
