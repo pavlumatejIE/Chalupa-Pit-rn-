@@ -4,7 +4,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { useCurrentProfile } from "@/lib/ProfileContext";
 import { useNotifications } from "@/lib/NotificationsContext";
 import { logActivity } from "@/lib/activity";
-import { uploadContentType } from "@/lib/uploadHelpers";
+import { uploadContentType, sanitizeFileName } from "@/lib/uploadHelpers";
 import { Paperclip, X, Trash2 } from "lucide-react";
 
 const IMAGE_EXT = ["jpg", "jpeg", "png", "gif", "webp"];
@@ -47,7 +47,7 @@ export default function BoardPage() {
     let attachment_name = null;
 
     if (file) {
-      const path = `${profile.id}/${Date.now()}-${file.name}`;
+      const path = `${profile.id}/${Date.now()}-${sanitizeFileName(file.name)}`;
       const { error: upErr } = await supabase.storage.from("attachments").upload(path, file, {
         contentType: uploadContentType(file),
       });

@@ -4,6 +4,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { useCurrentProfile } from "@/lib/ProfileContext";
 import { useNotifications } from "@/lib/NotificationsContext";
 import { logActivity } from "@/lib/activity";
+import { sanitizeFileName } from "@/lib/uploadHelpers";
 import { Plus, X, Trash2 } from "lucide-react";
 
 export default function PhotosPage() {
@@ -29,7 +30,7 @@ export default function PhotosPage() {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
-    const path = `${profile.id}/${Date.now()}-${file.name}`;
+    const path = `${profile.id}/${Date.now()}-${sanitizeFileName(file.name)}`;
     const { error } = await supabase.storage.from("photos").upload(path, file);
     if (!error) {
       const { data } = supabase.storage.from("photos").getPublicUrl(path);

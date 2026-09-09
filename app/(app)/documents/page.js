@@ -4,7 +4,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { useCurrentProfile } from "@/lib/ProfileContext";
 import { useNotifications } from "@/lib/NotificationsContext";
 import { logActivity } from "@/lib/activity";
-import { uploadContentType } from "@/lib/uploadHelpers";
+import { uploadContentType, sanitizeFileName } from "@/lib/uploadHelpers";
 import { FileText, Plus, X, Tag, Trash2 } from "lucide-react";
 
 export default function DocumentsPage() {
@@ -82,7 +82,7 @@ export default function DocumentsPage() {
     if (!title.trim() || !file) return;
     setUploading(true);
     setUploadError("");
-    const path = `${profile.id}/${Date.now()}-${file.name}`;
+    const path = `${profile.id}/${Date.now()}-${sanitizeFileName(file.name)}`;
     const { error: upErr } = await supabase.storage.from("documents").upload(path, file, {
       contentType: uploadContentType(file),
     });

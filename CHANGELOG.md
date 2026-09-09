@@ -4,6 +4,13 @@
 obrazovce), takže po nasazení hned poznáš, jestli se nová verze opravdu
 dostala na Netlify.
 
+## 1.17
+- Oprava: soubory s českou diakritikou nebo mezerami v názvu (např.
+  "Doporučení k pojištění majetku.pdf") Supabase Storage odmítal hláškou
+  "Invalid key". Appka teď před uložením vytvoří bezpečnou verzi názvu
+  jen pro úložiště – v appce se všude dál zobrazuje původní čitelný
+  název souboru
+
 ## 1.16
 - Oprava vážné chyby: pokud se nahrání souboru z nějakého důvodu nepovedlo
   (velký soubor, výpadek připojení…), appka to potichu ignorovala – zpráva
